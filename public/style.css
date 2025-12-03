@@ -488,72 +488,6 @@ body {
   font-size: 0.875rem;
 }
 
-/* Utility */
-.hidden {
-  display: none !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .header-content h1 {
-    font-size: 1.25rem;
-  }
-  
-  .editor-actions {
-    flex-direction: column;
-    align-items: flex-end;
-  }
-  
-  #editor {
-    min-height: 300px;
-  }
-}
-/* Dark Mode Theme */
-.dark-mode {
-  --bg: #0d1117;
-  --surface: #161b22;
-  --text: #e6edf3;
-  --text-light: #9da5b4;
-  --border: #2d333b;
-  --shadow: 0 1px 3px rgba(0,0,0,0.6);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.6);
-}
-
-/* Components update automatically because they use variables */
-body.dark-mode {
-  background: var(--bg);
-  color: var(--text);
-}
-
-body.dark-mode input,
-body.dark-mode textarea {
-  background: var(--surface);
-  color: var(--text);
-  border-color: var(--border);
-}
-
-body.dark-mode .modal {
-  background: rgba(0,0,0,0.85);
-}
-/* Glow effect for icons in Dark Mode */
-/* White glow on icons when hovering in Dark Mode */
-/* In Dark Mode: icons become brighter on hover (no glow) */
-/* Base brightness for header icons in Dark Mode */
-/* Always-visible icons — auto adjust for light & dark backgrounds */
-img.icon {
-  filter: invert(0%) brightness(0%) contrast(100%);   /* Light mode: dark icons */
-  transition: 0.15s ease-in-out;
-}
-
-/* Dark mode → make icons white and visible */
-.dark-mode img.icon {
-  filter: invert(100%) brightness(200%) contrast(100%);
-}
-
-/* Hover effect in dark mode → slightly brighter */
-.dark-mode img.icon:hover {
-  filter: invert(100%) brightness(300%) contrast(100%);
-}
 /* ABOUT DEVELOPER – NEW STYLING */
 
 .about-dev {
@@ -631,6 +565,45 @@ img.icon {
   color: #5a4800;
 }
 
+/* Always-visible icons — auto adjust for light & dark backgrounds */
+img.icon {
+  filter: invert(0%) brightness(0%) contrast(100%);
+  transition: 0.15s ease-in-out;
+}
 
+/* Dark mode → make icons white and visible */
+.dark-mode img.icon {
+  filter: invert(100%) brightness(200%) contrast(100%);
+}
 
+/* Hover effect in dark mode → slightly brighter */
+.dark-mode img.icon:hover {
+  filter: invert(100%) brightness(300%) contrast(100%);
+}
 
+/* In Dark Mode: icons become brighter on hover (no glow) */
+.dark-mode .header-actions img:hover {
+  filter: brightness(3);
+  transition: 0.2s ease-in-out;
+}
+
+/* Utility */
+.hidden {
+  display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-content h1 {
+    font-size: 1.25rem;
+  }
+  
+  .editor-actions {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  #editor {
+    min-height: 300px;
+  }
+}

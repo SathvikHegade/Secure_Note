@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Secure, password-protected notepad with file upload and AI summarization">
-  <meta name="keywords" content="secure notepad, password protected, file upload, AI summarization">
-  <meta name="author" content="Secure Pad Pro">
-  <title>Secure Pad Pro</title>
-  <link rel="stylesheet" href="/style.css">
-  <link rel="manifest" href="/manifest.json">
-
-  <!-- Favicon -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Secure, password-protected notes with file upload and AI summarization (client-only)"/>
+  <meta name="keywords" content="secure notes, password protected, file upload, AI summarization"/>
+  <meta name="author" content="Secure Note Pro"/>
+  <title>Secure Note Pro</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="manifest" href="/manifest.json" />
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
 </head>
 
@@ -21,7 +19,7 @@
     <div class="header-content">
       <h1 style="display:flex; align-items:center; gap:10px;">
         <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/lock-closed.svg" style="width:30px;">
-        Secure Pad Pro
+        Secure Note Pro
       </h1>
 
       <div class="header-actions">
@@ -31,7 +29,7 @@
           <img class="icon" id="themeIcon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/moon.svg" style="width:22px;">
         </button>
 
-        <span class="pad-id">Pad: <strong id="padName"></strong></span>
+        <span class="pad-id">Note: <strong id="padName"></strong></span>
 
         <button class="icon-btn" id="infoBtn" aria-label="About">
           <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/information-circle.svg" style="width:22px;">
@@ -50,7 +48,7 @@
     <div class="auth-box">
       <h2 id="authTitle" style="display:flex; align-items:center; gap:10px;">
         <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/key.svg" style="width:26px;">
-        Access Pad
+        Access Note
       </h2>
 
       <p id="authSubtitle">Enter password to continue</p>
@@ -69,7 +67,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary" id="authSubmit">
-          Access Pad
+          Access Note
         </button>
       </form>
 
@@ -77,7 +75,7 @@
 
       <div class="auth-toggle">
         <button type="button" class="btn-link" id="toggleAuth">
-          Create new pad instead
+          Create new note instead
         </button>
       </div>
 
@@ -129,12 +127,12 @@
             <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/arrow-up-tray.svg" style="width:40px;">
           </p>
           <p><strong>Drop files here or click to browse</strong></p>
-          <p class="upload-hint">PDF, JPG, PNG, DOCX • Max 10MB</p>
+          <p class="upload-hint">PDF, JPG, PNG, DOCX • Max 10MB (stored locally)</p>
         </div>
       </div>
 
       <div class="file-info">
-        Files auto-delete after 24 hours
+        Files stored locally in your browser (IndexedDB) and expire after 24 hours
       </div>
 
       <div id="filesList" class="files-list"></div>
@@ -181,7 +179,7 @@
       <div class="modal-header">
         <h2 style="display:flex; align-items:center; gap:10px;">
           <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/information-circle.svg" style="width:26px;">
-          About Secure Pad Pro
+          About Secure Note Pro
         </h2>
 
         <button class="modal-close" id="closeInfo">&times;</button>
@@ -191,11 +189,11 @@
         <div class="info-section">
           <h3>Features</h3>
           <ul>
-            <li>Password-protected pads</li>
-            <li>Auto-save every 2 seconds</li>
-            <li>File uploads (10MB max)</li>
+            <li>Password-protected notes (saved locally)</li>
+            <li>Auto-save every 2 seconds (local)</li>
+            <li>File uploads (IndexedDB)</li>
             <li>Preview PDFs and images</li>
-            <li>AI-powered summarization</li>
+            <li>AI-powered summarization (optional)</li>
             <li>Files expire in 24 hours</li>
           </ul>
         </div>
@@ -203,121 +201,92 @@
         <div class="info-section">
           <h3>Privacy & Security</h3>
           <p>
-            • Passwords are hashed with SHA-256<br>
-            • Files validated for security<br>
-            • No tracking or analytics<br>
-            • AI runs locally in your browser
+            • Passwords are hashed with SHA-256 in the browser<br>
+            • Files validated for security before storing<br>
+            • No server, no tracking<br>
+            • AI runs locally in your browser (if enabled)
           </p>
         </div>
 
         <div class="info-section">
           <h3>How to Use</h3>
           <p>
-            1. Each URL is a separate pad<br>
-            2. Set a password on first visit<br>
-            3. Share the URL + password with others<br>
+            1. Each URL is a separate note<br>
+            2. Set a password on first visit (stored locally)<br>
+            3. Share the URL + password with others (if they import the note data)<br>
             4. Type notes, upload files, get summaries
           </p>
         </div>
 
         <div class="info-footer">
           <p>100% Free & Open Source</p>
-          <p>Powered by Transformers.js</p>
+          <p>Client-only version for static hosting</p>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Developer Modal -->
-  <!-- Developer Modal -->
-<div id="devModal" class="modal hidden">
-  <div class="modal-content" style="max-width:700px;">
-    <div class="modal-header">
-      <h2 style="display:flex; align-items:center; gap:10px;">
-        <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/user-circle.svg" style="width:26px;">
-        About the Developer
-      </h2>
-      <button class="modal-close" id="closeDev">&times;</button>
-    </div>
+  <div id="devModal" class="modal hidden">
+    <div class="modal-content" style="max-width:700px;">
+      <div class="modal-header">
+        <h2 style="display:flex; align-items:center; gap:10px;">
+          <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/user-circle.svg" style="width:26px;">
+          About the Developer
+        </h2>
 
-    <div class="modal-body about-dev">
-
-      <!-- Profile Picture -->
-      <div class="dev-photo">
-        <img src="/developer.jpg" alt="Developer Photo">
+        <button class="modal-close" id="closeDev">&times;</button>
       </div>
 
-      <!-- Profile Section -->
-      <section class="dev-section">
-        <h3><span class="dev-icon">📄</span> Profile</h3>
-        <div class="section-line"></div>
+      <div class="modal-body" style="overflow-y:auto; max-height:75vh;">
 
-        <p><strong>Name:</strong> T S Sathwik Hegade</p>
-        <p><strong>Role:</strong> Engineering Student, Aspiring Developer</p>
-        <p><strong>Institution:</strong> BMS Institute of Technology and Management</p>
-      </section>
-
-      <!-- Technical Skills -->
-      <section class="dev-section">
-        <h3><span class="dev-icon">🛠️</span> Technical Skills</h3>
-        <div class="section-line"></div>
-
-        <ul class="dev-list">
-          <li>Machine Learning (ML)</li>
-          <li>Deep Learning (DL)</li>
-          <li>C++ Programming</li>
-          <li>Python Programming</li>
-        </ul>
-      </section>
-
-      <!-- Future Goals -->
-      <section class="dev-section">
-        <h3><span class="dev-icon">🎯</span> Future Goals</h3>
-        <div class="section-line"></div>
-
-        <p>
-          Dedicated to advancing expertise in Machine Learning, Deep Learning,
-          and comprehensive software development. Committed to building innovative
-          solutions and contributing to cutting-edge technology projects.
-        </p>
-      </section>
-
-      <!-- Contact Information -->
-      <section class="dev-section">
-        <h3><span class="dev-icon">📧</span> Contact Information</h3>
-        <div class="section-line"></div>
-
-        <div class="contact-box">
-          <strong>Email:</strong><br>
-          <a href="mailto:sathvikhegade3@gmail.com">sathvikhegade3@gmail.com</a>
+        <div style="text-align:center; margin-bottom:1.5rem;">
+          <img src="/developer.jpg"
+               alt="Developer Photo"
+               style="width:140px;height:140px;border-radius:50%;object-fit:cover;border:4px solid #667eea;">
         </div>
-      </section>
 
-      <!-- Report Section -->
-      <section class="dev-section">
-        <h3><span class="dev-icon">🚨</span> Report Section</h3>
-        <div class="section-line"></div>
+        <section>
+          <h3>Profile</h3>
+          <p><strong>Name:</strong> T S Sathwik Hegade</p>
+          <p><strong>Role:</strong> Engineering Student, Aspiring Developer</p>
+          <p><strong>Institution:</strong> BMS Institute of Technology and Management</p>
+        </section>
 
-        <div class="notice-box">
-          <strong>⚠ Important Notice</strong>
+        <section>
+          <h3>Technical Skills</h3>
+          <ul>
+            <li>Machine Learning</li>
+            <li>Deep Learning</li>
+            <li>C++ Programming</li>
+            <li>Python Programming</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Future Goals</h3>
           <p>
-            For any inquiries, feedback, bug reports, or professional communication
-            regarding this application, candidates and users are requested to contact
-            the developer directly via email at:
-            <strong>sathvikhegade3@gmail.com</strong>
+            Focused on advancing ML, DL, and full-stack development.  
+            Passionate about building modern, secure, AI-powered applications.
           </p>
+        </section>
+
+        <section>
+          <h3>Contact</h3>
+          <p>
+            <strong>Email:</strong>
+            <a href="mailto:sathvikhegade3@gmail.com">sathvikhegade3@gmail.com</a>
+          </p>
+        </section>
+
+        <div style="text-align:center; margin-top:2rem;">
+          <button class="btn btn-primary" id="closeDevBottom">Close</button>
         </div>
-      </section>
 
-      <div style="text-align:center; margin-top:2rem;">
-        <button class="btn btn-primary" id="closeDevBottom">Close</button>
       </div>
-
     </div>
   </div>
-</div>
 
-
-  <script src="/script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
