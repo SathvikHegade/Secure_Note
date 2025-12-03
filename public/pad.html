@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Secure, password-protected notepad with file upload and AI summarization">
+  <meta name="keywords" content="secure notepad, password protected, file upload, AI summarization">
+  <meta name="author" content="Secure Pad Pro">
+  <title>Secure Pad Pro</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <h1 style="display:flex; align-items:center; gap:10px;">
+        <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/lock-closed.svg" style="width:30px;">
+        Secure Pad Pro
+      </h1>
+
+      <div class="header-actions">
+
+        <!-- Theme Toggle -->
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle Theme">
+          <img class="icon" id="themeIcon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/moon.svg" style="width:22px;">
+        </button>
+
+        <span class="pad-id">Pad: <strong id="padName"></strong></span>
+
+        <button class="icon-btn" id="infoBtn" aria-label="About">
+          <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/information-circle.svg" style="width:22px;">
+        </button>
+
+        <button class="icon-btn" id="devBtn" aria-label="Developer">
+          <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/user-circle.svg" style="width:22px;">
+        </button>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- Password Screen -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-box">
+      <h2 id="authTitle" style="display:flex; align-items:center; gap:10px;">
+        <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/key.svg" style="width:26px;">
+        Access Pad
+      </h2>
+
+      <p id="authSubtitle">Enter password to continue</p>
+
+      <form id="authForm" class="auth-form">
+        <div class="form-group">
+          <label for="passwordInput">Password</label>
+          <input type="password" id="passwordInput" required minlength="4"
+                 placeholder="Enter password (min 4 characters)" autocomplete="current-password">
+        </div>
+
+        <div class="form-group hidden" id="confirmGroup">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword"
+                 placeholder="Re-enter password" autocomplete="new-password">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="authSubmit">
+          Access Pad
+        </button>
+      </form>
+
+      <div id="authError" class="error-message hidden"></div>
+
+      <div class="auth-toggle">
+        <button type="button" class="btn-link" id="toggleAuth">
+          Create new pad instead
+        </button>
+      </div>
+
+      <div style="text-align:center; margin-top: 1rem;">
+        <button type="button" class="btn-link" id="devBtnAuth">About Developer</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main id="mainContent" class="main-content hidden">
+
+    <!-- Notes Editor -->
+    <section class="editor-section">
+      <div class="editor-header">
+        <h2 style="display:flex; align-items:center; gap:10px;">
+          <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/document-text.svg" style="width:26px;">
+          Notes
+        </h2>
+
+        <div class="editor-actions">
+          <button class="btn btn-secondary" id="summarizeBtn">
+            Summarize
+          </button>
+          <span class="save-status" id="saveStatus">Saved</span>
+        </div>
+      </div>
+
+      <textarea id="editor" placeholder="Start typing your notes..." spellcheck="true"></textarea>
+    </section>
+
+    <!-- Files Section -->
+    <section class="files-section">
+      <div class="section-header">
+        <h2 style="display:flex; align-items:center; gap:10px;">
+          <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/folder.svg" style="width:24px;">
+          Files
+        </h2>
+
+        <span class="file-count" id="fileCount">0 files</span>
+      </div>
+
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.docx" hidden>
+
+        <div class="upload-content" style="text-align:center;">
+          <p class="upload-icon">
+            <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/arrow-up-tray.svg" style="width:40px;">
+          </p>
+          <p><strong>Drop files here or click to browse</strong></p>
+          <p class="upload-hint">PDF, JPG, PNG, DOCX • Max 10MB</p>
+        </div>
+      </div>
+
+      <div class="file-info">
+        Files auto-delete after 24 hours
+      </div>
+
+      <div id="filesList" class="files-list"></div>
+    </section>
+
+  </main>
+
+  <!-- Summary Modal -->
+  <div id="summaryModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="display:flex; align-items:center; gap:10px;">
+          <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/sparkles.svg" style="width:24px;">
+          AI Summary
+        </h2>
+
+        <button class="modal-close" id="closeSummary">&times;</button>
+      </div>
+
+      <div class="modal-body" id="summaryContent">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Generating summary...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- File Preview Modal -->
+  <div id="previewModal" class="modal hidden">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2 id="previewTitle">Preview</h2>
+        <button class="modal-close" id="closePreview">&times;</button>
+      </div>
+
+      <div class="modal-body" id="previewBody"></div>
+    </div>
+  </div>
+
+  <!-- About App Modal -->
+  <div id="infoModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 style="display:flex; align-items:center; gap:10px;">
+          <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/information-circle.svg" style="width:26px;">
+          About Secure Pad Pro
+        </h2>
+
+        <button class="modal-close" id="closeInfo">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="info-section">
+          <h3>Features</h3>
+          <ul>
+            <li>Password-protected pads</li>
+            <li>Auto-save every 2 seconds</li>
+            <li>File uploads (10MB max)</li>
+            <li>Preview PDFs and images</li>
+            <li>AI-powered summarization</li>
+            <li>Files expire in 24 hours</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h3>Privacy & Security</h3>
+          <p>
+            • Passwords are hashed with SHA-256<br>
+            • Files validated for security<br>
+            • No tracking or analytics<br>
+            • AI runs locally in your browser
+          </p>
+        </div>
+
+        <div class="info-section">
+          <h3>How to Use</h3>
+          <p>
+            1. Each URL is a separate pad<br>
+            2. Set a password on first visit<br>
+            3. Share the URL + password with others<br>
+            4. Type notes, upload files, get summaries
+          </p>
+        </div>
+
+        <div class="info-footer">
+          <p>100% Free & Open Source</p>
+          <p>Powered by Transformers.js</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Developer Modal -->
+  <!-- Developer Modal -->
+<div id="devModal" class="modal hidden">
+  <div class="modal-content" style="max-width:700px;">
+    <div class="modal-header">
+      <h2 style="display:flex; align-items:center; gap:10px;">
+        <img class="icon" src="https://cdn.jsdelivr.net/npm/heroicons@2.1.1/24/outline/user-circle.svg" style="width:26px;">
+        About the Developer
+      </h2>
+      <button class="modal-close" id="closeDev">&times;</button>
+    </div>
+
+    <div class="modal-body about-dev">
+
+      <!-- Profile Picture -->
+      <div class="dev-photo">
+        <img src="/developer.jpg" alt="Developer Photo">
+      </div>
+
+      <!-- Profile Section -->
+      <section class="dev-section">
+        <h3><span class="dev-icon">📄</span> Profile</h3>
+        <div class="section-line"></div>
+
+        <p><strong>Name:</strong> T S Sathwik Hegade</p>
+        <p><strong>Role:</strong> Engineering Student, Aspiring Developer</p>
+        <p><strong>Institution:</strong> BMS Institute of Technology and Management</p>
+      </section>
+
+      <!-- Technical Skills -->
+      <section class="dev-section">
+        <h3><span class="dev-icon">🛠️</span> Technical Skills</h3>
+        <div class="section-line"></div>
+
+        <ul class="dev-list">
+          <li>Machine Learning (ML)</li>
+          <li>Deep Learning (DL)</li>
+          <li>C++ Programming</li>
+          <li>Python Programming</li>
+        </ul>
+      </section>
+
+      <!-- Future Goals -->
+      <section class="dev-section">
+        <h3><span class="dev-icon">🎯</span> Future Goals</h3>
+        <div class="section-line"></div>
+
+        <p>
+          Dedicated to advancing expertise in Machine Learning, Deep Learning,
+          and comprehensive software development. Committed to building innovative
+          solutions and contributing to cutting-edge technology projects.
+        </p>
+      </section>
+
+      <!-- Contact Information -->
+      <section class="dev-section">
+        <h3><span class="dev-icon">📧</span> Contact Information</h3>
+        <div class="section-line"></div>
+
+        <div class="contact-box">
+          <strong>Email:</strong><br>
+          <a href="mailto:sathvikhegade3@gmail.com">sathvikhegade3@gmail.com</a>
+        </div>
+      </section>
+
+      <!-- Report Section -->
+      <section class="dev-section">
+        <h3><span class="dev-icon">🚨</span> Report Section</h3>
+        <div class="section-line"></div>
+
+        <div class="notice-box">
+          <strong>⚠ Important Notice</strong>
+          <p>
+            For any inquiries, feedback, bug reports, or professional communication
+            regarding this application, candidates and users are requested to contact
+            the developer directly via email at:
+            <strong>sathvikhegade3@gmail.com</strong>
+          </p>
+        </div>
+      </section>
+
+      <div style="text-align:center; margin-top:2rem;">
+        <button class="btn btn-primary" id="closeDevBottom">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+  <script src="/script.js"></script>
+</body>
+</html>

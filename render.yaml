@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: dontpad-minimal
+    env: node
+    region: oregon
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 18
