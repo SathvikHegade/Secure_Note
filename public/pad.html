@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Secure, password-protected notepad with file upload and AI summarization">
+  <meta name="keywords" content="secure notepad, password protected, file upload, AI summarization">
+  <meta name="author" content="Secure Pad Pro">
+  <title>Secure Pad Pro</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <h1>🔒 Secure Pad Pro</h1>
+      <div class="header-actions">
+        <span class="pad-id">Pad: <strong id="padName"></strong></span>
+        <button class="icon-btn" id="themeToggle" title="Toggle Dark Mode" aria-label="Toggle theme">🌙</button>
+        <button class="icon-btn" id="infoBtn" title="About" aria-label="About">ℹ️</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Password Screen -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-box">
+      <h2 id="authTitle">🔐 Access Pad</h2>
+      <p id="authSubtitle">Enter password to continue</p>
+
+      <form id="authForm" class="auth-form">
+        <div class="form-group">
+          <label for="passwordInput">Password</label>
+          <input type="password" id="passwordInput" required minlength="4"
+            placeholder="Enter password (min 4 characters)" autocomplete="current-password">
+        </div>
+
+        <div class="form-group hidden" id="confirmGroup">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="Re-enter password" autocomplete="new-password">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="authSubmit">
+          Access Pad
+        </button>
+      </form>
+
+      <div id="authError" class="error-message hidden"></div>
+
+      <div class="auth-toggle">
+        <button type="button" class="btn-link" id="toggleAuth">
+          Create new pad instead
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main id="mainContent" class="main-content hidden">
+    <!-- Editor Section -->
+    <section class="editor-section">
+      <div class="editor-header">
+        <h2>📝 Notes</h2>
+        <div class="editor-actions">
+          <button class="btn btn-secondary" id="summarizeBtn" title="AI Summarization">
+            ✨ Summarize
+          </button>
+          <span class="save-status" id="saveStatus">Saved</span>
+        </div>
+      </div>
+      <textarea id="editor" placeholder="Start typing your notes..." spellcheck="true"></textarea>
+    </section>
+
+    <!-- Files Section -->
+    <section class="files-section">
+      <div class="section-header">
+        <h2>📎 Files</h2>
+        <span class="file-count" id="fileCount">0 files</span>
+      </div>
+
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.docx" hidden>
+        <div class="upload-content">
+          <p class="upload-icon">📤</p>
+          <p><strong>Drop files here or click to browse</strong></p>
+          <p class="upload-hint">PDF, JPG, PNG, DOCX • Max 10MB</p>
+        </div>
+      </div>
+
+      <div class="file-info">
+        ⏰ Files auto-delete after 24 hours
+      </div>
+
+      <div id="filesList" class="files-list"></div>
+    </section>
+  </main>
+
+  <!-- Summary Modal -->
+  <div id="summaryModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>✨ AI Summary</h2>
+        <button class="modal-close" id="closeSummary" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" id="summaryContent">
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Generating summary...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview Modal -->
+  <div id="previewModal" class="modal hidden">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2 id="previewTitle">Preview</h2>
+        <button class="modal-close" id="closePreview" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body" id="previewBody"></div>
+    </div>
+  </div>
+
+  <!-- Info Modal -->
+  <!-- Info Modal -->
+  <div id="infoModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ℹ️ About Secure Pad Pro</h2>
+        <button class="modal-close" id="closeInfo" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <h3>Features</h3>
+          <ul>
+            <li>🔒 Password-protected pads</li>
+            <li>💾 Auto-save every 2 seconds</li>
+            <li>📎 File uploads (10MB max)</li>
+            <li>👁️ Preview PDFs and images</li>
+            <li>✨ AI-powered summarization</li>
+            <li>⏰ Files expire in 24 hours</li>
+          </ul>
+        </div>
+
+        <div class="info-section">
+          <h3>Privacy & Security</h3>
+          <p>• Passwords are hashed with SHA-256<br>
+            • Files validated for security<br>
+            • No tracking or analytics<br>
+            • AI runs locally in your browser</p>
+        </div>
+
+        <div class="info-section">
+          <h3>How to Use</h3>
+          <p>1. Each URL is a separate pad<br>
+            2. Set a password on first visit<br>
+            3. Share the URL + password with others<br>
+            4. Type notes, upload files, get summaries</p>
+        </div>
+        <div class="info-section developer-section">
+          <h3>👨‍💻 About the Developer</h3>
+          <div class="developer-card">
+
+            <!-- Developer Image Added Here -->
+            <div class="developer-photo">
+              <img src="/developer.jpg" alt="Developer Photo" class="dev-img">
+            </div>
+            <!-- End Image Section -->
+
+            <div class="developer-info">
+              <p><strong>Name:</strong> T S Sathvik Hegade</p>
+              <p><strong>Role:</strong> Engineering Student, Aspiring Developer</p>
+              <p><strong>Institution:</strong> BMS Institute of Technology and Management</p>
+            </div>
+
+            <div class="skills-section">
+              <h4>💻 Technical Skills</h4>
+              <div class="skill-tags">
+                <span class="skill-tag">Machine Learning</span>
+                <span class="skill-tag">Deep Learning</span>
+                <span class="skill-tag">C++ Programming</span>
+                <span class="skill-tag">Python Programming</span>
+              </div>
+            </div>
+
+            <div class="goals-section">
+              <h4>🎯 Future Goals</h4>
+              <p>Dedicated to advancing expertise in Machine Learning, Deep Learning, and comprehensive software
+                development.</p>
+            </div>
+
+            <div class="contact-section">
+              <h4>📧 Contact</h4>
+              <a href="mailto:sathvikhegade3@gmail.com" class="contact-link">
+                sathvikhegade3@gmail.com
+              </a>
+            </div>
+
+            <div class="report-section">
+              <p class="report-notice">⚠️ For bug reports, feedback, or inquiries, please contact via email.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-footer">
+          <p>100% Free & Open Source</p>
+          <p>Developed with ❤️ by T S Sathvik Hegade</p>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+
+</html>

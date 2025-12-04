@@ -1,12 +1,43 @@
 services:
   - type: web
-    name: dontpad-minimal
+    name: secure-pad-pro
     env: node
-    region: oregon
-    buildCommand: "npm install"
-    startCommand: "npm start"
+    buildCommand: npm install
+    startCommand: npm start
     plan: free
-    autoDeploy: true
+    healthCheckPath: /
     envVars:
-      - key: NODE_VERSION
-        value: 18
+      - key: NODE_ENV
+        value: production
+```
+
+5. Press `Ctrl + S` to save
+
+---
+
+## **What is this file for?**
+
+This file is used when you deploy to **Render.com** (free hosting). It tells Render how to:
+- Build your app (`npm install`)
+- Start your app (`npm start`)
+- Use the free tier
+- Set environment variables
+
+**You only need this file when deploying to Render. For local testing, you don't need it.**
+
+---
+
+Your complete file structure should now be:
+```
+secure-pad-pro/
+├── .gitignore ✅
+├── package.json ✅
+├── README.md ✅
+├── render.yaml ✅
+├── server.js ✅
+└── public/
+    ├── icon.svg ✅
+    ├── manifest.json ✅
+    ├── pad.html ✅
+    ├── script.js ✅
+    └── style.css ✅
