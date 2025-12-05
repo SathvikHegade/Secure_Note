@@ -352,12 +352,35 @@ app.delete('/api/file/:fileId', async (req, res) => {
 app.get('/api/file/:padId/:filename', async (req, res) => {
   try {
     const { padId, filename } = req.params;
-    const filepath = path.join(UPLOADS_DIR, padId, filename);
+    console.log(`[FILE REQUEST] padId: ${padId}, filename: ${filename}`);
     
-    await fs.access(filepath);
+    // Get file info from database
+    const files = await db.getFiles(padId);
+    const fileRecord = files.find(f => f.filename === filename);
+    
+    if (!fileRecord) {
+      console.error(`[FILE ERROR] File not found in database: ${filename}`);
+      return res.status(404).json({ error: 'File not found in database' });
+    }
+    
+    console.log(`[FILE INFO] Database path: ${fileRecord.path}`);
+    
+    // Use the path from database (absolute path)
+    const filepath = fileRecord.path;
+    
+    // Check if file exists on disk
+    try {
+      await fs.access(filepath);
+    } catch (err) {
+      console.error(`[FILE ERROR] File not found on disk: ${filepath}`, err);
+      return res.status(404).json({ error: 'File not found on disk' });
+    }
+    
+    console.log(`[FILE SUCCESS] Sending file: ${filepath}`);
     res.sendFile(filepath);
   } catch (error) {
-    res.status(404).json({ error: 'File not found' });
+    console.error('[FILE ERROR]', error);
+    res.status(500).json({ error: 'Failed to retrieve file' });
   }
 });
 
@@ -392,6 +415,45 @@ app.get('/api/test-gemini', async (req, res) => {
       model: GEMINI_MODEL,
       apiKeyConfigured: !!process.env.GEMINI_API_KEY
     });
+  }
+});
+
+// Debug endpoint - list files for a pad
+app.get('/api/debug/files/:padId', async (req, res) => {
+  try {
+    const { padId } = req.params;
+    const files = await db.getFiles(padId);
+    
+    // Check which files exist on disk
+    const fileStatus = await Promise.all(files.map(async (f) => {
+      let exists = false;
+      try {
+        await fs.access(f.path);
+        exists = true;
+      } catch (err) {
+        exists = false;
+      }
+      
+      return {
+        id: f.id,
+        filename: f.filename,
+        original_name: f.original_name,
+        path: f.path,
+        size: f.size,
+        exists_on_disk: exists,
+        uploaded_at: f.uploaded_at
+      };
+    }));
+    
+    res.json({
+      padId,
+      uploadsDir: UPLOADS_DIR,
+      __dirname: __dirname,
+      files: fileStatus
+    });
+  } catch (error) {
+    console.error('Debug files error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
