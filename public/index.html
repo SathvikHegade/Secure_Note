@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Secure, password-protected notepad with custom URLs and AI summarization">
+  <meta name="keywords" content="secure notepad, password protected, custom URL, AI summarization">
+  <meta name="author" content="SecureNote">
+  <title>SecureNote - Custom Secure Notepads</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <h1>🔒 SecureNote</h1>
+      <div class="header-actions">
+        <button class="icon-btn" id="themeToggle" title="Toggle Dark Mode" aria-label="Toggle theme">🌙</button>
+        <button class="icon-btn" id="infoBtn" title="About" aria-label="About">ℹ️</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="home-container">
+    <div class="home-hero">
+      <h2>🌟 Create Your Secure Notepad</h2>
+      <p class="hero-subtitle">Password-protected notes with custom URLs and AI-powered summarization</p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tab-container">
+      <button class="tab-btn active" data-tab="login">
+        🔓 Access Existing Note
+      </button>
+      <button class="tab-btn" data-tab="create">
+        ✨ Create New Note
+      </button>
+    </div>
+
+    <!-- Login Form -->
+    <div class="auth-card active" id="loginTab">
+      <div class="auth-card-header">
+        <h3>Access Your Note</h3>
+        <p>Enter your custom URL and password</p>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="loginUrlName">
+            <span class="label-text">Custom URL Name</span>
+            <span class="label-hint">The unique name you created</span>
+          </label>
+          <div class="url-input-group">
+            <span class="url-prefix">/note/</span>
+            <input 
+              type="text" 
+              id="loginUrlName" 
+              name="urlName"
+              required 
+              minlength="3"
+              maxlength="50"
+              pattern="[a-zA-Z0-9_-]+"
+              placeholder="myproject123"
+              autocomplete="off"
+              spellcheck="false"
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">
+            <span class="label-text">Password</span>
+          </label>
+          <input 
+            type="password" 
+            id="loginPassword" 
+            name="password"
+            required 
+            minlength="4"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          >
+        </div>
+
+        <div id="loginError" class="error-message hidden"></div>
+
+        <button type="submit" class="btn btn-primary btn-large" id="loginSubmit">
+          <span class="btn-icon">🚀</span>
+          <span>Access My Note</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Create Form -->
+    <div class="auth-card" id="createTab">
+      <div class="auth-card-header">
+        <h3>Create New SecureNote</h3>
+        <p>Choose a custom URL and set a password</p>
+      </div>
+
+      <form id="createForm" class="auth-form">
+        <div class="form-group">
+          <label for="createUrlName">
+            <span class="label-text">Custom URL Name</span>
+            <span class="label-hint">3-50 characters: letters, numbers, hyphens, underscores</span>
+          </label>
+          <div class="url-input-group">
+            <span class="url-prefix">/note/</span>
+            <input 
+              type="text" 
+              id="createUrlName" 
+              name="urlName"
+              required 
+              minlength="3"
+              maxlength="50"
+              pattern="[a-zA-Z0-9_-]+"
+              placeholder="myproject123"
+              autocomplete="off"
+              spellcheck="false"
+            >
+          </div>
+          <div id="urlAvailability" class="input-feedback hidden"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="createPassword">
+            <span class="label-text">Password</span>
+            <span class="label-hint">At least 4 characters</span>
+          </label>
+          <input 
+            type="password" 
+            id="createPassword" 
+            name="password"
+            required 
+            minlength="4"
+            placeholder="Create a secure password"
+            autocomplete="new-password"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">
+            <span class="label-text">Confirm Password</span>
+          </label>
+          <input 
+            type="password" 
+            id="confirmPassword" 
+            name="confirmPassword"
+            required 
+            minlength="4"
+            placeholder="Re-enter your password"
+            autocomplete="new-password"
+          >
+        </div>
+
+        <div id="createError" class="error-message hidden"></div>
+
+        <button type="submit" class="btn btn-primary btn-large" id="createSubmit">
+          <span class="btn-icon">✨</span>
+          <span>Create My Note</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <h4>Secure & Private</h4>
+        <p>bcrypt password hashing ensures your notes stay protected</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h4>Custom URLs</h4>
+        <p>Create memorable, personalized URLs for your notepads</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💾</div>
+        <h4>Auto-Save</h4>
+        <p>Your changes are automatically saved every few seconds</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h4>AI Summaries</h4>
+        <p>Google Gemini AI generates concise summaries of your notes</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📎</div>
+        <h4>File Uploads</h4>
+        <p>Attach PDFs, images, and documents to your notes</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌙</div>
+        <h4>Dark Mode</h4>
+        <p>Easy on the eyes with automatic dark mode support</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Info Modal -->
+  <div id="infoModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>ℹ️ About SecureNote</h3>
+        <button class="modal-close" id="closeInfo" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <h4>Features</h4>
+        <ul>
+          <li><strong>Custom URLs:</strong> Create memorable, unique URLs for your notepads</li>
+          <li><strong>Password Protection:</strong> bcrypt-hashed passwords keep your notes secure</li>
+          <li><strong>Auto-Save:</strong> Changes are saved automatically every few seconds</li>
+          <li><strong>AI Summarization:</strong> Get concise summaries powered by Google Gemini</li>
+          <li><strong>File Uploads:</strong> Attach PDFs, images, and documents (max 10MB)</li>
+          <li><strong>Dark Mode:</strong> Toggle between light and dark themes</li>
+        </ul>
+
+        <h4>Privacy & Security</h4>
+        <p>
+          Your notes are stored securely with bcrypt password hashing (10 rounds). 
+          Only you can access your note with the correct URL and password combination.
+        </p>
+
+        <h4>File Management</h4>
+        <p>
+          Uploaded files are automatically deleted after 24 hours to save storage space.
+          Supported formats: PDF, JPG, PNG, DOCX (max 10MB per file).
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/index.js"></script>
+</body>
+
+</html>

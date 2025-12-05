@@ -1,0 +1,304 @@
+// ============================================
+// SECURENOTE - HOMEPAGE
+// ============================================
+
+// DOM Elements
+const els = {
+  // Tabs
+  tabBtns: document.querySelectorAll('.tab-btn'),
+  loginTab: document.getElementById('loginTab'),
+  createTab: document.getElementById('createTab'),
+  
+  // Login Form
+  loginForm: document.getElementById('loginForm'),
+  loginUrlName: document.getElementById('loginUrlName'),
+  loginPassword: document.getElementById('loginPassword'),
+  loginError: document.getElementById('loginError'),
+  loginSubmit: document.getElementById('loginSubmit'),
+  
+  // Create Form
+  createForm: document.getElementById('createForm'),
+  createUrlName: document.getElementById('createUrlName'),
+  createPassword: document.getElementById('createPassword'),
+  confirmPassword: document.getElementById('confirmPassword'),
+  createError: document.getElementById('createError'),
+  createSubmit: document.getElementById('createSubmit'),
+  urlAvailability: document.getElementById('urlAvailability'),
+  
+  // Modals
+  infoModal: document.getElementById('infoModal'),
+  infoBtn: document.getElementById('infoBtn'),
+  closeInfo: document.getElementById('closeInfo'),
+  themeToggle: document.getElementById('themeToggle')
+};
+
+let checkUrlTimeout = null;
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
+function init() {
+  setupEventListeners();
+  setupDarkMode();
+  console.log('✓ Homepage initialized');
+}
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+
+function setupEventListeners() {
+  // Tab switching
+  els.tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+  });
+  
+  // Forms
+  els.loginForm.addEventListener('submit', handleLogin);
+  els.createForm.addEventListener('submit', handleCreate);
+  
+  // URL availability check
+  els.createUrlName.addEventListener('input', handleUrlInput);
+  
+  // Modals
+  els.infoBtn.addEventListener('click', () => showModal(els.infoModal));
+  els.closeInfo.addEventListener('click', () => closeModal(els.infoModal));
+  
+  // Click outside modal
+  els.infoModal.addEventListener('click', (e) => {
+    if (e.target === els.infoModal) closeModal(els.infoModal);
+  });
+  
+  // Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal(els.infoModal);
+  });
+}
+
+// ============================================
+// TAB SWITCHING
+// ============================================
+
+function switchTab(tab) {
+  // Update buttons
+  els.tabBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+  
+  // Update cards
+  els.loginTab.classList.toggle('active', tab === 'login');
+  els.createTab.classList.toggle('active', tab === 'create');
+  
+  // Clear errors
+  hideError(els.loginError);
+  hideError(els.createError);
+  hideError(els.urlAvailability);
+}
+
+// ============================================
+// LOGIN HANDLING
+// ============================================
+
+async function handleLogin(e) {
+  e.preventDefault();
+  
+  const urlName = els.loginUrlName.value.trim();
+  const password = els.loginPassword.value;
+  
+  // Validation
+  if (!urlName || urlName.length < 3) {
+    showError(els.loginError, 'URL name must be at least 3 characters');
+    return;
+  }
+  
+  if (!password || password.length < 4) {
+    showError(els.loginError, 'Password must be at least 4 characters');
+    return;
+  }
+  
+  // Disable submit button
+  els.loginSubmit.disabled = true;
+  els.loginSubmit.innerHTML = '<span class="btn-icon">⏳</span><span>Verifying...</span>';
+  
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urlName, password })
+    });
+    
+    const data = await res.json();
+    
+    if (res.ok && data.success) {
+      // Store credentials in sessionStorage
+      sessionStorage.setItem('padAuth', JSON.stringify({ urlName, password }));
+      
+      // Redirect to pad
+      window.location.href = `/pad/${urlName}`;
+    } else {
+      showError(els.loginError, data.error || 'Incorrect URL or password.');
+      els.loginSubmit.disabled = false;
+      els.loginSubmit.innerHTML = '<span class="btn-icon">🚀</span><span>Access My Note</span>';
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    showError(els.loginError, 'Connection error. Please try again.');
+    els.loginSubmit.disabled = false;
+    els.loginSubmit.innerHTML = '<span class="btn-icon">🚀</span><span>Access My Note</span>';
+  }
+}
+
+// ============================================
+// CREATE PAD HANDLING
+// ============================================
+
+function handleUrlInput() {
+  clearTimeout(checkUrlTimeout);
+  
+  const urlName = els.createUrlName.value.trim();
+  
+  if (!urlName || urlName.length < 3) {
+    hideError(els.urlAvailability);
+    return;
+  }
+  
+  // Validate format
+  const regex = /^[a-zA-Z0-9_-]+$/;
+  if (!regex.test(urlName)) {
+    showError(els.urlAvailability, '❌ Invalid format. Use only letters, numbers, hyphens, and underscores', 'error');
+    return;
+  }
+  
+  // Show checking status
+  showError(els.urlAvailability, '⏳ Checking availability...', 'info');
+  
+  // Debounce check
+  checkUrlTimeout = setTimeout(() => checkUrlAvailability(urlName), 500);
+}
+
+async function checkUrlAvailability(urlName) {
+  try {
+    const res = await fetch(`/api/check-url/${urlName}`);
+    const data = await res.json();
+    
+    if (data.available) {
+      showError(els.urlAvailability, '✅ This URL is available!', 'success');
+    } else {
+      showError(els.urlAvailability, data.error || '❌ This URL name is already taken.', 'error');
+    }
+  } catch (error) {
+    console.error('Check URL error:', error);
+    hideError(els.urlAvailability);
+  }
+}
+
+async function handleCreate(e) {
+  e.preventDefault();
+  
+  const urlName = els.createUrlName.value.trim();
+  const password = els.createPassword.value;
+  const confirm = els.confirmPassword.value;
+  
+  // Validation
+  if (!urlName || urlName.length < 3 || urlName.length > 50) {
+    showError(els.createError, 'URL name must be 3-50 characters');
+    return;
+  }
+  
+  const regex = /^[a-zA-Z0-9_-]+$/;
+  if (!regex.test(urlName)) {
+    showError(els.createError, 'Invalid URL format. Use only letters, numbers, hyphens, and underscores');
+    return;
+  }
+  
+  if (!password || password.length < 4) {
+    showError(els.createError, 'Password must be at least 4 characters');
+    return;
+  }
+  
+  if (password !== confirm) {
+    showError(els.createError, 'Passwords do not match');
+    return;
+  }
+  
+  // Disable submit button
+  els.createSubmit.disabled = true;
+  els.createSubmit.innerHTML = '<span class="btn-icon">⏳</span><span>Creating...</span>';
+  
+  try {
+    const res = await fetch('/api/create-pad', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ urlName, password })
+    });
+    
+    const data = await res.json();
+    
+    if (res.ok && data.success) {
+      // Store credentials in sessionStorage
+      sessionStorage.setItem('padAuth', JSON.stringify({ urlName, password }));
+      
+      // Redirect to pad
+      window.location.href = `/pad/${urlName}`;
+    } else {
+      showError(els.createError, data.error || 'Failed to create note');
+      els.createSubmit.disabled = false;
+      els.createSubmit.innerHTML = '<span class="btn-icon">✨</span><span>Create My Note</span>';
+    }
+  } catch (error) {
+    console.error('Create error:', error);
+    showError(els.createError, 'Connection error. Please try again.');
+    els.createSubmit.disabled = false;
+    els.createSubmit.innerHTML = '<span class="btn-icon">✨</span><span>Create My Note</span>';
+  }
+}
+
+// ============================================
+// UTILITIES
+// ============================================
+
+function showError(element, message, type = 'error') {
+  element.textContent = message;
+  element.className = 'input-feedback ' + type;
+  element.classList.remove('hidden');
+}
+
+function hideError(element) {
+  element.classList.add('hidden');
+}
+
+function showModal(modal) {
+  modal.classList.remove('hidden');
+}
+
+function closeModal(modal) {
+  modal.classList.add('hidden');
+}
+
+// ============================================
+// DARK MODE
+// ============================================
+
+function setupDarkMode() {
+  // Check saved preference
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'dark') {
+    document.body.classList.add('dark-mode');
+    els.themeToggle.textContent = '☀️';
+  }
+  
+  // Toggle theme
+  els.themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    els.themeToggle.textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+}
+
+// ============================================
+// INIT
+// ============================================
+
+document.addEventListener('DOMContentLoaded', init);

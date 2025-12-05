@@ -1,12 +1,11 @@
 // ============================================
-// SECURE PAD PRO - CLIENT
+// SECURENOTE - NOTE EDITOR
 // ============================================
 
 // State
 let padId = '';
 let currentPassword = '';
 let saveTimeout = null;
-let pipeline = null;
 
 // DOM Elements
 const els = {
@@ -16,11 +15,8 @@ const els = {
   authTitle: document.getElementById('authTitle'),
   authSubtitle: document.getElementById('authSubtitle'),
   passwordInput: document.getElementById('passwordInput'),
-  confirmPassword: document.getElementById('confirmPassword'),
-  confirmGroup: document.getElementById('confirmGroup'),
   authSubmit: document.getElementById('authSubmit'),
   authError: document.getElementById('authError'),
-  toggleAuth: document.getElementById('toggleAuth'),
   padName: document.getElementById('padName'),
   editor: document.getElementById('editor'),
   saveStatus: document.getElementById('saveStatus'),
@@ -49,37 +45,34 @@ async function init() {
   padId = window.location.pathname.split('/').pop() || 'default';
   els.padName.textContent = padId;
   
-  const exists = await checkPadExists();
-  setupAuthScreen(exists);
+  // Check for stored credentials from homepage
+  const storedAuth = sessionStorage.getItem('padAuth');
+  if (storedAuth) {
+    try {
+      const auth = JSON.parse(storedAuth);
+      if (auth.urlName === padId && auth.password) {
+        currentPassword = auth.password;
+        sessionStorage.removeItem('padAuth'); // Clear after use
+        await loadPad();
+        showMainScreen();
+        setupEventListeners();
+        return;
+      }
+    } catch (e) {
+      console.error('Failed to parse stored auth:', e);
+    }
+  }
+  
+  // Show password screen if no stored credentials
+  setupAuthScreen();
   setupEventListeners();
   
-  console.log('✓ Secure Pad initialized');
+  console.log('✓ SecureNote initialized');
 }
 
-async function checkPadExists() {
-  try {
-    const res = await fetch(`/api/pad/${padId}/exists`);
-    const data = await res.json();
-    return data.exists;
-  } catch {
-    return false;
-  }
-}
-
-function setupAuthScreen(exists) {
-  if (exists) {
-    els.authTitle.textContent = '🔐 Enter Password';
-    els.authSubtitle.textContent = 'This pad is password protected';
-    els.confirmGroup.classList.add('hidden');
-    els.authSubmit.textContent = 'Access Pad';
-    els.toggleAuth.textContent = 'Create new pad instead';
-  } else {
-    els.authTitle.textContent = '🆕 Create New Pad';
-    els.authSubtitle.textContent = 'Set a password to protect your pad';
-    els.confirmGroup.classList.remove('hidden');
-    els.authSubmit.textContent = 'Create & Access';
-    els.toggleAuth.textContent = 'Access existing pad instead';
-  }
+function setupAuthScreen() {
+  els.authTitle.textContent = '🔐 Enter Password';
+  els.authSubtitle.textContent = 'This note is password protected';
 }
 
 // ============================================
@@ -89,11 +82,6 @@ function setupAuthScreen(exists) {
 function setupEventListeners() {
   // Auth
   els.authForm.addEventListener('submit', handleAuth);
-  els.toggleAuth.addEventListener('click', () => {
-    const isCreate = !els.confirmGroup.classList.contains('hidden');
-    setupAuthScreen(isCreate);
-    els.authError.classList.add('hidden');
-  });
   
   // Editor
   els.editor.addEventListener('input', handleEditorChange);
@@ -139,8 +127,6 @@ async function handleAuth(e) {
   e.preventDefault();
   
   const password = els.passwordInput.value.trim();
-  const confirm = els.confirmPassword.value.trim();
-  const isCreate = !els.confirmGroup.classList.contains('hidden');
   
   // Validation
   if (!password || password.length < 4) {
@@ -148,51 +134,35 @@ async function handleAuth(e) {
     return;
   }
   
-  if (isCreate && password !== confirm) {
-    showError('Passwords do not match');
-    return;
-  }
-  
   els.authSubmit.disabled = true;
-  els.authSubmit.textContent = isCreate ? 'Creating...' : 'Verifying...';
+  els.authSubmit.textContent = 'Verifying...';
   
   try {
-    if (isCreate) {
-      await createPad(password);
-    } else {
-      await verifyPad(password);
-    }
-    
+    // Try to load pad with password
     currentPassword = password;
-    await loadPad();
-    showMainScreen();
+    const res = await fetch(`/api/pad/${padId}/get`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    
+    if (res.ok) {
+      const data = await res.json();
+      els.editor.value = data.content || '';
+      renderFiles(data.files || []);
+      showMainScreen();
+    } else {
+      const data = await res.json();
+      showError(data.error || 'Incorrect password');
+      els.authSubmit.disabled = false;
+      els.authSubmit.textContent = 'Access Note';
+    }
   } catch (error) {
-    showError(error.message);
+    console.error('Auth error:', error);
+    showError('Connection error. Please try again.');
     els.authSubmit.disabled = false;
-    els.authSubmit.textContent = isCreate ? 'Create & Access' : 'Access Pad';
+    els.authSubmit.textContent = 'Access Note';
   }
-}
-
-async function createPad(password) {
-  const res = await fetch(`/api/pad/${padId}/create`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password })
-  });
-  
-  const data = await res.json();
-  if (!data.success) throw new Error(data.error || 'Failed to create pad');
-}
-
-async function verifyPad(password) {
-  const res = await fetch(`/api/pad/${padId}/verify`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password })
-  });
-  
-  const data = await res.json();
-  if (!data.success) throw new Error('Incorrect password');
 }
 
 function showError(message) {
@@ -400,120 +370,76 @@ async function handleSummarize() {
   }
   
   showModal(els.summaryModal);
-  els.summaryContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Analyzing your notes...</p></div>';
+  els.summaryContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generating AI summary with Google Gemini...</p></div>';
   
   try {
-    // Load model if not loaded
-    if (!pipeline) {
-      els.summaryContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading AI model (first time only)...</p></div>';
-      await loadModel();
-    }
+    const res = await fetch(`/api/summarize/${padId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: currentPassword, content: text })
+    });
     
-    // Generate summary using local AI
-    const summary = await generateSummary(text);
-    displaySummary(summary);
+    const data = await res.json();
+    
+    if (res.ok && data.success) {
+      displaySummary(data.summary, text);
+    } else {
+      els.summaryContent.innerHTML = `
+        <div style="text-align:center;padding:2rem;">
+          <p style="color:var(--danger);margin-bottom:1rem;">❌ ${escapeHtml(data.error || 'Summarization failed')}</p>
+          <p style="color:var(--text-light);font-size:0.875rem;">
+            ${data.error && data.error.includes('API key') ? 
+              'The administrator needs to configure the Gemini API key in the .env file.' : 
+              'Please try again later or check your connection.'}
+          </p>
+        </div>
+      `;
+    }
   } catch (error) {
-    els.summaryContent.innerHTML = `<p style="color:var(--danger)">Summarization failed. Using fallback method...</p>`;
-    setTimeout(() => {
-      const fallback = generateFallbackSummary(text);
-      displaySummary(fallback);
-    }, 1000);
+    console.error('Summarization error:', error);
+    els.summaryContent.innerHTML = `
+      <div style="text-align:center;padding:2rem;">
+        <p style="color:var(--danger);margin-bottom:1rem;">❌ Connection error</p>
+        <p style="color:var(--text-light);font-size:0.875rem;">Failed to connect to the server. Please try again.</p>
+      </div>
+    `;
   }
 }
 
-async function loadModel() {
-  // Load Transformers.js (lightweight summarization)
-  const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.6.0';
-  document.head.appendChild(script);
+function displaySummary(summary, originalText) {
+  const wordCount = originalText.split(/\s+/).length;
+  const lineCount = originalText.split('\n').length;
   
-  return new Promise((resolve, reject) => {
-    script.onload = async () => {
-      try {
-        const { pipeline: createPipeline } = window.Transformers;
-        pipeline = await createPipeline('summarization', 'Xenova/distilbart-cnn-6-6');
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    };
-    script.onerror = reject;
-  });
-}
-
-async function generateSummary(text) {
-  // Truncate if too long
-  const maxLength = 1000;
-  const truncated = text.length > maxLength ? text.substring(0, maxLength) : text;
-  
-  const result = await pipeline(truncated, {
-    max_length: 130,
-    min_length: 30,
-    do_sample: false
-  });
-  
-  return {
-    summary: result[0].summary_text,
-    keyPoints: extractKeyPoints(text),
-    insights: generateInsights(text)
-  };
-}
-
-function generateFallbackSummary(text) {
-  // Simple fallback without AI
-  const sentences = text.match(/[^.!?]+[.!?]+/g) || [];
-  const summary = sentences.slice(0, 3).join(' ').trim();
-  
-  return {
-    summary: summary || text.substring(0, 200) + '...',
-    keyPoints: extractKeyPoints(text),
-    insights: 'This is a basic summary. For AI-powered summaries, the system needs to load the model first.'
-  };
-}
-
-function extractKeyPoints(text) {
-  // Extract lines that look like bullet points or important statements
-  const lines = text.split('\n').filter(l => l.trim());
-  const points = lines
-    .filter(l => l.match(/^[-*•]\s/) || l.length < 100)
-    .slice(0, 5)
-    .map(l => l.replace(/^[-*•]\s*/, '').trim());
-  
-  return points.length > 0 ? points : [
-    'Main content focuses on the topics discussed',
-    'Multiple points and ideas are covered',
-    'Further details available in full text'
-  ];
-}
-
-function generateInsights(text) {
-  const wordCount = text.split(/\s+/).length;
-  const lineCount = text.split('\n').length;
-  
-  return `This note contains approximately ${wordCount} words across ${lineCount} lines. ${
-    wordCount > 500 ? 'This is a detailed document with substantial content.' :
-    wordCount > 200 ? 'This is a medium-length note.' :
-    'This is a brief note.'
-  }`;
-}
-
-function displaySummary(data) {
   els.summaryContent.innerHTML = `
     <div class="summary-section">
-      <h3>📝 Summary</h3>
-      <p>${escapeHtml(data.summary)}</p>
+      <h3>🤖 AI Summary</h3>
+      <div style="background:var(--bg);padding:1rem;border-radius:0.5rem;border-left:4px solid var(--primary);">
+        <p style="white-space:pre-wrap;line-height:1.6;">${escapeHtml(summary)}</p>
+      </div>
     </div>
     
     <div class="summary-section">
-      <h3>🔑 Key Points</h3>
-      <ul>
-        ${data.keyPoints.map(point => `<li>${escapeHtml(point)}</li>`).join('')}
-      </ul>
+      <h3>📊 Document Statistics</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1rem;">
+        <div style="background:var(--bg);padding:1rem;border-radius:0.5rem;text-align:center;">
+          <div style="font-size:1.5rem;font-weight:700;color:var(--primary);">${wordCount}</div>
+          <div style="font-size:0.875rem;color:var(--text-light);">Words</div>
+        </div>
+        <div style="background:var(--bg);padding:1rem;border-radius:0.5rem;text-align:center;">
+          <div style="font-size:1.5rem;font-weight:700;color:var(--primary);">${lineCount}</div>
+          <div style="font-size:0.875rem;color:var(--text-light);">Lines</div>
+        </div>
+        <div style="background:var(--bg);padding:1rem;border-radius:0.5rem;text-align:center;">
+          <div style="font-size:1.5rem;font-weight:700;color:var(--primary);">${originalText.length}</div>
+          <div style="font-size:0.875rem;color:var(--text-light);">Characters</div>
+        </div>
+      </div>
     </div>
     
     <div class="summary-section">
-      <h3>💡 Insights</h3>
-      <p>${escapeHtml(data.insights)}</p>
+      <p style="text-align:center;color:var(--text-light);font-size:0.875rem;">
+        ✨ Powered by Google Gemini AI
+      </p>
     </div>
   `;
 }

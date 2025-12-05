@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Secure, password-protected notepad with file upload and AI summarization">
   <meta name="keywords" content="secure notepad, password protected, file upload, AI summarization">
-  <meta name="author" content="Secure Pad Pro">
-  <title>Secure Pad Pro</title>
+  <meta name="author" content="SecureNote">
+  <title>SecureNote</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -17,44 +17,37 @@
   <!-- Header -->
   <header class="app-header">
     <div class="header-content">
-      <h1>🔒 Secure Pad Pro</h1>
+      <h1>🔒 SecureNote</h1>
       <div class="header-actions">
-        <span class="pad-id">Pad: <strong id="padName"></strong></span>
+        <span class="pad-id">Note: <strong id="padName"></strong></span>
         <button class="icon-btn" id="themeToggle" title="Toggle Dark Mode" aria-label="Toggle theme">🌙</button>
         <button class="icon-btn" id="infoBtn" title="About" aria-label="About">ℹ️</button>
       </div>
     </div>
   </header>
 
-  <!-- Password Screen -->
+  <!-- Password Verification Screen -->
   <div id="authScreen" class="auth-screen">
     <div class="auth-box">
-      <h2 id="authTitle">🔐 Access Pad</h2>
-      <p id="authSubtitle">Enter password to continue</p>
+      <h2 id="authTitle">🔐 Enter Password</h2>
+      <p id="authSubtitle">This note is password protected</p>
 
       <form id="authForm" class="auth-form">
         <div class="form-group">
           <label for="passwordInput">Password</label>
           <input type="password" id="passwordInput" required minlength="4"
-            placeholder="Enter password (min 4 characters)" autocomplete="current-password">
-        </div>
-
-        <div class="form-group hidden" id="confirmGroup">
-          <label for="confirmPassword">Confirm Password</label>
-          <input type="password" id="confirmPassword" placeholder="Re-enter password" autocomplete="new-password">
+            placeholder="Enter your password" autocomplete="current-password">
         </div>
 
         <button type="submit" class="btn btn-primary" id="authSubmit">
-          Access Pad
+          Access Note
         </button>
       </form>
 
       <div id="authError" class="error-message hidden"></div>
 
       <div class="auth-toggle">
-        <button type="button" class="btn-link" id="toggleAuth">
-          Create new pad instead
-        </button>
+        <a href="/" class="btn-link">← Back to Home</a>
       </div>
     </div>
   </div>
@@ -131,14 +124,14 @@
   <div id="infoModal" class="modal hidden">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>ℹ️ About Secure Pad Pro</h2>
+        <h2>ℹ️ About SecureNote</h2>
         <button class="modal-close" id="closeInfo" aria-label="Close">&times;</button>
       </div>
       <div class="modal-body">
         <div class="info-section">
           <h3>Features</h3>
           <ul>
-            <li>🔒 Password-protected pads</li>
+            <li>🔒 Password-protected notes</li>
             <li>💾 Auto-save every 2 seconds</li>
             <li>📎 File uploads (10MB max)</li>
             <li>👁️ Preview PDFs and images</li>
@@ -149,18 +142,19 @@
 
         <div class="info-section">
           <h3>Privacy & Security</h3>
-          <p>• Passwords are hashed with SHA-256<br>
+          <p>• Passwords hashed with bcrypt (10 rounds)<br>
+            • Custom URLs for easy access<br>
             • Files validated for security<br>
             • No tracking or analytics<br>
-            • AI runs locally in your browser</p>
+            • AI powered by Google Gemini</p>
         </div>
 
         <div class="info-section">
           <h3>How to Use</h3>
-          <p>1. Each URL is a separate pad<br>
-            2. Set a password on first visit<br>
-            3. Share the URL + password with others<br>
-            4. Type notes, upload files, get summaries</p>
+          <p>1. Create a note with a custom URL from the homepage<br>
+            2. Set a secure password (bcrypt hashed)<br>
+            3. Share the URL + password with collaborators<br>
+            4. Type notes, upload files, get AI summaries</p>
         </div>
         <div class="info-section developer-section">
           <h3>👨‍💻 About the Developer</h3>

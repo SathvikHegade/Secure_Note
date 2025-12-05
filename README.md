@@ -1,53 +1,306 @@
 # 🔒 Secure Pad Pro
 
-A professional, password-protected notepad with file uploads and AI-powered summarization. **100% free to deploy and run.**
+A professional, password-protected notepad with **custom URLs**, **bcrypt security**, and **AI-powered summarization** using Google Gemini. **Production-ready and fully secure.**
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
 
 ## ✨ Features
 
-- 🔐 **Password Protection** - SHA-256 hashed passwords
-- 💾 **Auto-Save** - Notes saved every 2 seconds
+### 🎯 Core Features
+- 🔗 **Custom URLs** - Create memorable pad URLs like `/pad/myproject123`
+- 🔐 **bcrypt Security** - Industry-standard password hashing (10 rounds)
+- 💾 **Auto-Save** - Notes saved automatically every 2 seconds
 - 📎 **File Uploads** - Up to 10MB (PDF, JPG, PNG, DOCX)
 - 👁️ **File Preview** - View PDFs and images instantly
-- ✨ **AI Summarization** - Local AI model (Transformers.js)
-- ⏰ **Auto-Expiry** - Files deleted after 24 hours
-- 📱 **Responsive** - Works on mobile and desktop
-- 🚀 **100% Free** - No paid APIs or services
-- 🔒 **Secure** - MIME validation, file size limits
+- ✨ **AI Summarization** - Google Gemini API integration
+- ⏰ **Auto-Expiry** - Files automatically deleted after 24 hours
+- 📱 **Responsive Design** - Works on mobile, tablet, and desktop
+- 🌙 **Dark Mode** - Toggle between light and dark themes
+- 🚀 **Production Ready** - Secure, scalable, and deployable
+
+### 🔒 Security Features
+- **bcrypt Password Hashing** - 10 salt rounds, no plain text storage
+- **Custom URL Validation** - Alphanumeric, hyphens, underscores only (3-50 chars)
+- **Unique URL Enforcement** - Each custom URL can only be used once
+- **MIME Type Validation** - File headers checked, not just extensions
+- **File Size Limits** - 10MB maximum per upload
+- **Password-Protected Access** - Every operation requires password verification
+- **Secure Error Messages** - Generic messages prevent enumeration attacks
 
 ## 🏗️ Architecture
 
 ```
-┌──────────────────────────────────────┐
-│          Frontend (Browser)          │
-│  • HTML/CSS/JS                       │
-│  • Transformers.js (Local AI)        │
-│  • File upload/preview               │
-└─────────────┬────────────────────────┘
-              │ HTTPS/REST API
-┌─────────────▼────────────────────────┐
-│         Backend (Express.js)         │
-│  • Password hashing (SHA-256)        │
-│  • File validation & storage         │
-│  • JSON-based pad storage            │
-│  • Cleanup cron job                  │
-└─────────────┬────────────────────────┘
+┌──────────────────────────────────────────────┐
+│          Frontend (Browser)                  │
+│  • Homepage: Login/Create Pad                │
+│  • Pad Editor: Auto-save, File uploads       │
+│  • AI Summarization UI                       │
+└─────────────┬────────────────────────────────┘
+              │ REST API (JSON)
+┌─────────────▼────────────────────────────────┐
+│         Backend (Node.js/Express)            │
+│  • Custom URL Management                     │
+│  • bcrypt Password Hashing                   │
+│  • File Validation & Storage                 │
+│  • Google Gemini API Integration             │
+│  • Automatic File Cleanup (hourly)           │
+└─────────────┬────────────────────────────────┘
               │
-┌─────────────▼────────────────────────┐
-│          File System                 │
-│  • /pads/*.json (pad data)           │
-│  • /uploads/*/* (uploaded files)     │
-└──────────────────────────────────────┘
+┌─────────────▼────────────────────────────────┐
+│          Storage Layer                       │
+│  • /pads/{customUrl}.json (pad data)         │
+│  • /uploads/{customUrl}/* (files)            │
+└──────────────────────────────────────────────┘
 ```
 
 ## 📁 Project Structure
 
 ```
-secure-pad-pro/
-├── server.js              # Express backend
+securenote/
+├── server.js              # Express backend with all routes
+├── package.json           # Dependencies and scripts
+├── .env.example           # Environment variables template
+├── SETUP.md              # Comprehensive setup guide
+├── README.md             # This file
+├── public/
+│   ├── index.html        # Homepage (login/create pad)
+│   ├── index.js          # Homepage JavaScript
+│   ├── pad.html          # Pad editor interface
+│   ├── script.js         # Pad editor JavaScript
+│   ├── style.css         # Global styles
+│   └── manifest.json     # PWA manifest
+├── pads/                 # JSON pad storage
+│   └── {customUrl}.json  # Individual pad files
+└── uploads/              # File uploads storage
+    └── {customUrl}/      # Per-pad upload directory
+```
+
+## 🚀 Quick Start
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure Environment
+
+```bash
+cp .env.example .env
+# Edit .env and add your Gemini API key
+```
+
+Get your Gemini API key: https://makersuite.google.com/app/apikey
+
+### 3. Run the Server
+
+```bash
+# Development (with auto-restart)
+npm run dev
+
+# Production
+npm start
+```
+
+### 4. Open in Browser
+
+Navigate to `http://localhost:3000`
+
+## 📚 Full Documentation
+
+See **[SETUP.md](./SETUP.md)** for:
+- Detailed installation instructions
+- Configuration options
+- Deployment guides (Render, Heroku, Railway, etc.)
+- Complete API documentation
+- Database schema
+- Security best practices
+- Troubleshooting guide
+
+## 🎯 How to Use
+
+### Creating a New Pad
+
+1. Go to the homepage
+2. Click "Create New Pad" tab
+3. Enter a custom URL name (e.g., "myproject123")
+4. Create a secure password
+5. Confirm your password
+6. Click "Create My Pad"
+7. Start writing!
+
+### Accessing an Existing Pad
+
+1. Go to the homepage
+2. Click "Access Existing Pad" tab
+3. Enter your custom URL name
+4. Enter your password
+5. Click "Access My Pad"
+
+### Using AI Summarization
+
+1. Write at least 50 characters in your pad
+2. Click the "✨ Summarize" button
+3. Google Gemini AI generates a concise summary
+4. View document statistics and insights
+
+## 🔑 Environment Variables
+
+Create a `.env` file with:
+
+```env
+# Server Port (default: 3000)
+PORT=3000
+
+# Google Gemini API Key (required for AI summarization)
+GEMINI_API_KEY=your_api_key_here
+
+# Gemini Model (optional, default: gemini-1.5-flash)
+GEMINI_MODEL=gemini-1.5-flash
+```
+
+## 🌐 Deployment
+
+### Deploy to Render
+
+1. Create account at https://render.com
+2. Create new Web Service
+3. Connect your repository
+4. Set environment variables:
+   - `GEMINI_API_KEY`
+   - `PORT` (optional)
+5. Deploy!
+
+### Deploy to Other Platforms
+
+See [SETUP.md](./SETUP.md) for deployment guides for:
+- Heroku
+- Railway
+- DigitalOcean
+- AWS
+- Any Node.js hosting platform
+
+## 🛡️ Security
+
+### Password Security
+- **bcrypt hashing** with 10 salt rounds
+- No plain text password storage
+- Timing-safe password comparison
+
+### Input Validation
+- Custom URL names: `^[a-zA-Z0-9_-]{3,50}$`
+- Password minimum: 4 characters (configurable)
+- File size limit: 10MB per file
+- Allowed file types: PDF, JPG, PNG, DOCX
+
+### File Security
+- MIME type validation using magic bytes
+- Files stored in isolated directories
+- Automatic expiration after 24 hours
+- Secure file ID generation (32-char hex)
+
+## 📊 Database Schema
+
+### Pad Object
+```json
+{
+  "padId": "myproject123",
+  "content": "Your notes here...",
+  "files": [...],
+  "passwordHash": "$2b$10$...",
+  "createdAt": "2025-12-05T10:00:00.000Z",
+  "updatedAt": "2025-12-05T10:30:00.000Z"
+}
+```
+
+See [SETUP.md](./SETUP.md) for complete schema documentation.
+
+## 🔧 API Endpoints
+
+### Authentication
+- `POST /api/create-pad` - Create new pad with custom URL
+- `POST /api/login` - Login to existing pad
+- `GET /api/check-url/:urlName` - Check URL availability
+
+### Pad Operations
+- `POST /api/pad/:padId/get` - Get pad content
+- `POST /api/pad/:padId/save` - Save pad content
+
+### File Operations
+- `POST /api/upload/:padId` - Upload file
+- `POST /files/:padId/:fileId` - Download file
+
+### AI Features
+- `POST /api/summarize/:padId` - Generate AI summary
+
+See [SETUP.md](./SETUP.md) for complete API documentation with request/response examples.
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**"Gemini API key not configured"**
+- Ensure `.env` file exists with valid `GEMINI_API_KEY`
+
+**"This URL name is already taken"**
+- Choose a different custom URL name
+
+**File upload fails**
+- Check file size (max 10MB)
+- Verify file type is allowed
+- Ensure `uploads/` directory is writable
+
+See [SETUP.md](./SETUP.md) for more troubleshooting tips.
+
+## 📦 Dependencies
+
+### Production
+- `express` - Web framework
+- `multer` - File upload handling
+- `cors` - Cross-origin resource sharing
+- `bcrypt` - Password hashing
+- `@google/generative-ai` - Google Gemini SDK
+- `dotenv` - Environment variable management
+
+### Development
+- `nodemon` - Auto-restart on file changes
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+## 👨‍💻 Developer
+
+**T S Sathvik Hegade**
+- 📧 Email: sathvikhegade3@gmail.com
+- 🎓 Institution: BMS Institute of Technology and Management
+- 💻 Skills: Machine Learning, Deep Learning, C++, Python
+
+## 🙏 Acknowledgments
+
+- Google Gemini AI for text summarization
+- bcrypt library for secure password hashing
+- Express.js framework
+- Multer for file handling
+
+---
+
+**Need Help?** 
+- 📖 Read the [SETUP.md](./SETUP.md) guide
+- 📧 Email: sathvikhegade3@gmail.com
+- 🐛 Report bugs via email
+
+**Made with ❤️ by T S Sathvik Hegade** with all routes
+├── package.json           # Dependencies and scripts
+├── .env.example           # Environment variables template
+├── SETUP.md              # Comprehensive setup guide
+├── README.md             # This file
 ├── package.json           # Dependencies
 ├── README.md             # This file
 ├── .gitignore            # Git ignore

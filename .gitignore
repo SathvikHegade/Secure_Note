@@ -10,3 +10,7 @@ dist/
 build/
 .vercel
 .render
+
+# Test files
+test-models.js
+test-single-model.js
