@@ -7,7 +7,6 @@ const crypto = require('crypto');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const { initDatabase, db } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +22,7 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static('public'));
 
 // Storage paths
+const PADS_DIR = path.join(__dirname, 'pads');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const SALT_ROUNDS = 10;
@@ -35,10 +35,11 @@ const ALLOWED_TYPES = {
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
 };
 
-// Initialize uploads directory
+// Initialize directories
 async function initDirs() {
+  await fs.mkdir(PADS_DIR, { recursive: true });
   await fs.mkdir(UPLOADS_DIR, { recursive: true });
-  console.log('✓ Storage directory initialized');
+  console.log('✓ Storage directories initialized');
 }
 
 // Hash password with bcrypt
@@ -58,8 +59,20 @@ function generateId() {
 
 // Validate custom URL name
 function isValidCustomUrl(urlName) {
+  // Only allow alphanumeric, hyphens, and underscores, 3-50 characters
   const regex = /^[a-zA-Z0-9_-]{3,50}$/;
   return regex.test(urlName);
+}
+
+// Check if pad exists
+async function padExists(padId) {
+  try {
+    const padPath = path.join(PADS_DIR, `${padId}.json`);
+    await fs.access(padPath);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // Validate MIME type using magic bytes
@@ -114,7 +127,7 @@ app.get('/api/check-url/:urlName', async (req, res) => {
       });
     }
     
-    const exists = await db.padExists(urlName);
+    const exists = await padExists(urlName);
     res.json({ available: !exists });
   } catch (error) {
     console.error('Check URL error:', error);
@@ -140,13 +153,22 @@ app.post('/api/create-pad', async (req, res) => {
     }
     
     // Check if URL already exists
-    if (await db.padExists(urlName)) {
+    if (await padExists(urlName)) {
       return res.status(409).json({ error: 'This URL name is already taken.' });
     }
     
-    // Create pad with hashed password
-    const passwordHash = await hashPassword(password);
-    await db.createPad(urlName, passwordHash);
+    // Create pad
+    const padData = {
+      padId: urlName,
+      content: '',
+      files: [],
+      passwordHash: await hashPassword(password),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    const padPath = path.join(PADS_DIR, `${urlName}.json`);
+    await fs.writeFile(padPath, JSON.stringify(padData, null, 2));
     
     res.json({ success: true, padId: urlName });
   } catch (error) {
@@ -164,14 +186,17 @@ app.post('/api/login', async (req, res) => {
       return res.status(400).json({ error: 'URL name and password are required' });
     }
     
+    const padPath = path.join(PADS_DIR, `${urlName}.json`);
+    
     // Check if pad exists
-    const pad = await db.getPad(urlName);
-    if (!pad) {
+    if (!await padExists(urlName)) {
       return res.status(401).json({ error: 'Incorrect URL or password.' });
     }
     
     // Verify password
-    const isValid = await verifyPassword(password, pad.password_hash);
+    const data = JSON.parse(await fs.readFile(padPath, 'utf-8'));
+    const isValid = await verifyPassword(password, data.passwordHash);
+    
     if (!isValid) {
       return res.status(401).json({ error: 'Incorrect URL or password.' });
     }
@@ -189,29 +214,21 @@ app.post('/api/pad/:padId/get', async (req, res) => {
     const { padId } = req.params;
     const { password } = req.body;
     
-    const pad = await db.getPad(padId);
-    if (!pad) {
+    const padPath = path.join(PADS_DIR, `${padId}.json`);
+    
+    if (!await padExists(padId)) {
       return res.status(404).json({ error: 'Pad not found' });
     }
     
+    const data = JSON.parse(await fs.readFile(padPath, 'utf-8'));
+    
     // Verify password
-    const isValid = await verifyPassword(password, pad.password_hash);
+    const isValid = await verifyPassword(password, data.passwordHash);
     if (!isValid) {
       return res.status(401).json({ error: 'Incorrect password' });
     }
     
-    // Get files
-    const filesData = await db.getFiles(padId);
-    const files = filesData.map(f => ({
-      id: f.id,
-      name: f.original_name,
-      filename: f.filename,
-      size: f.size,
-      type: f.mime_type,
-      uploadedAt: f.uploaded_at
-    }));
-    
-    res.json({ content: pad.content || '', files });
+    res.json({ content: data.content, files: data.files });
   } catch (error) {
     console.error('Get pad error:', error);
     res.status(500).json({ error: 'Failed to load pad' });
@@ -224,19 +241,25 @@ app.post('/api/pad/:padId/save', async (req, res) => {
     const { padId } = req.params;
     const { password, content } = req.body;
     
-    const pad = await db.getPad(padId);
-    if (!pad) {
+    const padPath = path.join(PADS_DIR, `${padId}.json`);
+    
+    if (!await padExists(padId)) {
       return res.status(404).json({ error: 'Pad not found' });
     }
     
+    const data = JSON.parse(await fs.readFile(padPath, 'utf-8'));
+    
     // Verify password
-    const isValid = await verifyPassword(password, pad.password_hash);
+    const isValid = await verifyPassword(password, data.passwordHash);
     if (!isValid) {
       return res.status(401).json({ error: 'Incorrect password' });
     }
     
     // Update content
-    await db.updatePad(padId, content);
+    data.content = content;
+    data.updatedAt = new Date().toISOString();
+    
+    await fs.writeFile(padPath, JSON.stringify(data, null, 2));
     res.json({ success: true });
   } catch (error) {
     console.error('Save error:', error);
@@ -254,13 +277,15 @@ app.post('/api/upload/:padId', upload.single('file'), async (req, res) => {
     const { padId } = req.params;
     const { password } = req.body;
     
-    // Verify pad and password
-    const pad = await db.getPad(padId);
-    if (!pad) {
+    // Verify password
+    const padPath = path.join(PADS_DIR, `${padId}.json`);
+    if (!await padExists(padId)) {
       return res.status(404).json({ error: 'Pad not found' });
     }
     
-    const isValid = await verifyPassword(password, pad.password_hash);
+    const padData = JSON.parse(await fs.readFile(padPath, 'utf-8'));
+    const isValid = await verifyPassword(password, padData.passwordHash);
+    
     if (!isValid) {
       return res.status(401).json({ error: 'Incorrect password' });
     }
@@ -274,105 +299,93 @@ app.post('/api/upload/:padId', upload.single('file'), async (req, res) => {
     // Save file
     const fileId = generateId();
     const ext = path.extname(req.file.originalname);
-    const filename = `${fileId}${ext}`;
     const padDir = path.join(UPLOADS_DIR, padId);
     await fs.mkdir(padDir, { recursive: true });
     
-    const filepath = path.join(padDir, filename);
-    await fs.writeFile(filepath, fileBuffer);
+    const filePath = path.join(padDir, `${fileId}${ext}`);
+    await fs.writeFile(filePath, fileBuffer);
     
-    // Calculate expiration (24 hours from now)
-    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    // Update pad data
+    const fileInfo = {
+      id: fileId,
+      name: req.file.originalname,
+      size: req.file.size,
+      uploadedAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+    };
     
-    // Save to database
-    const fileData = await db.addFile(
-      padId,
-      filename,
-      req.file.originalname,
-      filepath,
-      req.file.size,
-      req.file.mimetype,
-      expiresAt
-    );
+    padData.files.push(fileInfo);
+    padData.updatedAt = new Date().toISOString();
+    await fs.writeFile(padPath, JSON.stringify(padData, null, 2));
     
-    res.json({
-      success: true,
-      file: {
-        id: fileData.id,
-        name: fileData.original_name,
-        filename: fileData.filename,
-        size: fileData.size,
-        type: fileData.mime_type,
-        uploadedAt: fileData.uploaded_at
-      }
-    });
+    res.json({ success: true, file: fileInfo });
   } catch (error) {
     console.error('Upload error:', error);
     res.status(500).json({ error: 'Upload failed' });
   }
 });
 
-// Delete file
-app.delete('/api/file/:fileId', async (req, res) => {
-  try {
-    const { fileId } = req.params;
-    const { padId, password } = req.body;
-    
-    // Verify pad and password
-    const pad = await db.getPad(padId);
-    if (!pad) {
-      return res.status(404).json({ error: 'Pad not found' });
-    }
-    
-    const isValid = await verifyPassword(password, pad.password_hash);
-    if (!isValid) {
-      return res.status(401).json({ error: 'Incorrect password' });
-    }
-    
-    // Delete from database
-    const file = await db.deleteFile(fileId);
-    
-    if (file) {
-      // Delete physical file
-      try {
-        await fs.unlink(file.path);
-      } catch (err) {
-        console.error('File deletion error:', err);
-      }
-    }
-    
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Delete file error:', error);
-    res.status(500).json({ error: 'Failed to delete file' });
-  }
-});
-
 // Download file
-app.get('/api/file/:padId/:filename', async (req, res) => {
+app.post('/files/:padId/:fileId', async (req, res) => {
   try {
-    const { padId, filename } = req.params;
-    const filepath = path.join(UPLOADS_DIR, padId, filename);
-    
-    await fs.access(filepath);
-    res.sendFile(filepath);
-  } catch (error) {
-    res.status(404).json({ error: 'File not found' });
-  }
-});
-
-// AI Summarization
-app.post('/api/summarize', async (req, res) => {
-  try {
-    const { padId, password, content } = req.body;
+    const { padId, fileId } = req.params;
+    const { password } = req.body;
     
     // Verify password
-    const pad = await db.getPad(padId);
-    if (!pad) {
+    const padPath = path.join(PADS_DIR, `${padId}.json`);
+    if (!await padExists(padId)) {
       return res.status(404).json({ error: 'Pad not found' });
     }
     
-    const isValid = await verifyPassword(password, pad.password_hash);
+    const padData = JSON.parse(await fs.readFile(padPath, 'utf-8'));
+    const isValid = await verifyPassword(password, padData.passwordHash);
+    
+    if (!isValid) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    // Find file
+    const fileInfo = padData.files.find(f => f.id === fileId);
+    if (!fileInfo) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    
+    // Check expiry
+    if (new Date(fileInfo.expiresAt) < new Date()) {
+      return res.status(410).json({ error: 'File expired' });
+    }
+    
+    // Serve file
+    const padDir = path.join(UPLOADS_DIR, padId);
+    const files = await fs.readdir(padDir);
+    const fileName = files.find(f => f.startsWith(fileId));
+    
+    if (!fileName) {
+      return res.status(404).json({ error: 'File not found on disk' });
+    }
+    
+    res.download(path.join(padDir, fileName), fileInfo.name);
+  } catch (error) {
+    console.error('Download error:', error);
+    res.status(500).json({ error: 'Download failed' });
+  }
+});
+
+// Summarize text with Gemini AI
+app.post('/api/summarize/:padId', async (req, res) => {
+  try {
+    const { padId } = req.params;
+    const { password, content } = req.body;
+    
+    // Verify password
+    const padPath = path.join(PADS_DIR, `${padId}.json`);
+    if (!await padExists(padId)) {
+      return res.status(404).json({ error: 'Pad not found' });
+    }
+    
+    const padData = JSON.parse(await fs.readFile(padPath, 'utf-8'));
+    const isValid = await verifyPassword(password, padData.passwordHash);
+    
     if (!isValid) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
@@ -402,6 +415,7 @@ app.post('/api/summarize', async (req, res) => {
   } catch (error) {
     console.error('Summarization error:', error);
     
+    // Provide helpful error messages
     if (error.message && error.message.includes('API key')) {
       return res.status(503).json({ 
         error: 'Invalid Gemini API key. Please check your .env configuration' 
@@ -414,63 +428,84 @@ app.post('/api/summarize', async (req, res) => {
   }
 });
 
-// Cleanup expired files (runs every hour)
-async function cleanupExpiredFiles() {
+// ============================================
+// CLEANUP
+// ============================================
+
+async function cleanupExpired() {
   try {
     console.log('Running cleanup...');
-    const expiredFiles = await db.deleteExpiredFiles();
+    const padFiles = await fs.readdir(PADS_DIR);
+    let cleaned = 0;
     
-    // Delete physical files
-    for (const file of expiredFiles) {
-      try {
-        await fs.unlink(file.path);
-      } catch (err) {
-        console.error(`Failed to delete file: ${file.path}`, err);
+    for (const padFile of padFiles) {
+      const padId = path.basename(padFile, '.json');
+      const padPath = path.join(PADS_DIR, padFile);
+      const padData = JSON.parse(await fs.readFile(padPath, 'utf-8'));
+      
+      const now = new Date();
+      const expired = padData.files.filter(f => new Date(f.expiresAt) < now);
+      
+      // Delete expired files
+      for (const file of expired) {
+        try {
+          const padDir = path.join(UPLOADS_DIR, padId);
+          const files = await fs.readdir(padDir);
+          const fileName = files.find(f => f.startsWith(file.id));
+          if (fileName) {
+            await fs.unlink(path.join(padDir, fileName));
+            cleaned++;
+          }
+        } catch (err) {
+          console.error(`Error deleting file ${file.id}:`, err);
+        }
+      }
+      
+      // Update pad data
+      if (expired.length > 0) {
+        padData.files = padData.files.filter(f => new Date(f.expiresAt) >= now);
+        padData.updatedAt = new Date().toISOString();
+        await fs.writeFile(padPath, JSON.stringify(padData, null, 2));
       }
     }
     
-    console.log(`✓ Cleanup complete. Removed ${expiredFiles.length} expired files.`);
+    console.log(`✓ Cleanup complete. Removed ${cleaned} expired files.`);
   } catch (error) {
     console.error('Cleanup error:', error);
   }
 }
 
+// Run cleanup every hour
+setInterval(cleanupExpired, 60 * 60 * 1000);
+
 // ============================================
-// START SERVER
+// SERVER START
 // ============================================
 
-async function startServer() {
-  try {
-    // Initialize database
-    await initDatabase();
-    
-    // Initialize file storage
-    await initDirs();
-    
-    // Start cleanup interval
-    setInterval(cleanupExpiredFiles, 60 * 60 * 1000); // Every hour
-    
-    // Start server
-    app.listen(PORT, '0.0.0.0', () => {
-      console.log(`
+initDirs().then(() => {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`
 ╔════════════════════════════════════════╗
 ║      SECURENOTE - SERVER RUNNING      ║
 ╠════════════════════════════════════════╣
 ║  Port: ${PORT.toString().padEnd(31)}║
 ║  Mode: Production                      ║
-║  Storage: PostgreSQL + Disk            ║
+║  Storage: JSON + Disk                  ║
 ║  AI: Google Gemini (${GEMINI_MODEL.padEnd(16)}) ║
 ║  Password: bcrypt (${SALT_ROUNDS} rounds)${' '.repeat(13)}║
 ╚════════════════════════════════════════╝
-`);
-      
-      // Run initial cleanup
-      cleanupExpiredFiles();
-    });
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
-}
+    `);
+    
+    // Initial cleanup
+    cleanupExpired();
+  });
+}).catch(err => {
+  console.error('Failed to start server:', err);
+  process.exit(1);
+});
 
-startServer();
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully...');
+  process.exit(0);
+});
