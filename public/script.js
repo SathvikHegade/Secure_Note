@@ -373,10 +373,14 @@ async function handleSummarize() {
   els.summaryContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generating AI summary with Google Gemini...</p></div>';
   
   try {
-    const res = await fetch(`/api/summarize/${padId}`, {
+    const res = await fetch('/api/summarize', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: currentPassword, content: text })
+      body: JSON.stringify({ 
+        padId: padId,
+        password: currentPassword, 
+        content: text 
+      })
     });
     
     const data = await res.json();
