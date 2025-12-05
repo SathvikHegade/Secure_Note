@@ -316,30 +316,58 @@ async function previewFile(filename, originalName) {
   try {
     const url = `/api/file/${padId}/${filename}`;
     const ext = originalName.split('.').pop().toLowerCase();
-    
-    els.previewTitle.textContent = originalName;
-    
-    if (ext === 'pdf') {
-      els.previewBody.innerHTML = `<iframe src="${url}" style="width:100%;height:70vh;border:none"></iframe>`;
-    } else {
-      els.previewBody.innerHTML = `<img src="${url}" style="max-width:100%;height:auto;display:block;margin:0 auto">`;
+
+    // Try to fetch the file first to catch errors and to avoid browser
+    // content-disposition issues when embedding directly.
+    const res = await fetch(url, { method: 'GET', cache: 'no-store' });
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      throw new Error(`Failed to fetch file: ${res.status} ${res.statusText} ${text}`);
     }
-    
+
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    els.previewTitle.textContent = originalName;
+
+    if (ext === 'pdf') {
+      els.previewBody.innerHTML = `<iframe src="${blobUrl}" style="width:100%;height:70vh;border:none"></iframe>`;
+    } else {
+      els.previewBody.innerHTML = `<img src="${blobUrl}" style="max-width:100%;height:auto;display:block;margin:0 auto">`;
+    }
+
     showModal(els.previewModal);
+
+    // Revoke object URL when modal is closed
+    const cleanup = () => {
+      try { URL.revokeObjectURL(blobUrl); } catch (e) {}
+      els.closePreview.removeEventListener('click', cleanup);
+    };
+    els.closePreview.addEventListener('click', cleanup);
   } catch (error) {
-    alert('Preview failed');
+    console.error('Preview error:', error);
+    alert('Preview failed: ' + (error.message || 'Unknown error'));
   }
 }
 
 async function downloadFile(filename, originalName) {
   try {
     const url = `/api/file/${padId}/${filename}`;
+    const res = await fetch(url, { method: 'GET', cache: 'no-store' });
+    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
+    a.href = blobUrl;
     a.download = originalName;
+    document.body.appendChild(a);
     a.click();
+    a.remove();
+    setTimeout(() => { try { URL.revokeObjectURL(blobUrl); } catch (e) {} }, 1000);
   } catch (error) {
-    alert('Download failed');
+    console.error('Download error:', error);
+    alert('Download failed: ' + (error.message || 'Unknown error'));
   }
 }
 
