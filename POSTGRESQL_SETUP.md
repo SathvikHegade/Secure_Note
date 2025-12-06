@@ -109,7 +109,7 @@ In your web service settings, add these environment variables:
 | `NODE_ENV` | `production` |
 | `PORT` | `3000` |
 | `DATABASE_URL` | `<paste Internal Database URL from step 2>` |
-| `GEMINI_API_KEY` | `AIzaSyAJPpoKXJ2ae-zHh5dNx1aA_sKNE5_yuZQ` |
+| `GEMINI_API_KEY` | `<your_gemini_api_key>` |
 | `GEMINI_MODEL` | `models/gemini-2.5-flash` |
 
 ### 5. Deploy
