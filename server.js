@@ -306,6 +306,8 @@ app.post('/api/upload/:padId', upload.single('file'), async (req, res) => {
           folder: `securenote/${padId}`,
           public_id: fileId,
           resource_type: 'auto',
+          type: 'upload',
+          access_mode: 'public',
           format: ext.substring(1) // Remove the dot
         },
         (error, result) => {
