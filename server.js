@@ -421,9 +421,29 @@ app.get('/api/file/:padId/:filename', async (req, res) => {
     
     console.log(`[FILE INFO] Cloudinary URL: ${fileRecord.cloudinary_url}`);
     
-    // Redirect to Cloudinary URL
+    // Fetch from Cloudinary and proxy through our server
     if (fileRecord.cloudinary_url) {
-      return res.redirect(fileRecord.cloudinary_url);
+      try {
+        const cloudinaryResponse = await fetch(fileRecord.cloudinary_url);
+        
+        if (!cloudinaryResponse.ok) {
+          console.error(`[FILE ERROR] Cloudinary returned ${cloudinaryResponse.status}`);
+          return res.status(cloudinaryResponse.status).json({ 
+            error: 'Failed to fetch file from storage' 
+          });
+        }
+        
+        // Set headers
+        res.setHeader('Content-Type', fileRecord.mime_type || 'application/octet-stream');
+        res.setHeader('Content-Disposition', `inline; filename="${fileRecord.original_name}"`);
+        
+        // Stream the file
+        const buffer = await cloudinaryResponse.arrayBuffer();
+        res.send(Buffer.from(buffer));
+      } catch (fetchError) {
+        console.error('[FILE ERROR] Failed to fetch from Cloudinary:', fetchError);
+        return res.status(500).json({ error: 'Failed to retrieve file' });
+      }
     } else {
       return res.status(404).json({ error: 'File URL not available' });
     }
