@@ -424,28 +424,26 @@ app.get('/api/file/:padId/:filename', async (req, res) => {
     }
     
     console.log(`[FILE INFO] Public ID: ${fileRecord.cloudinary_public_id}`);
+    console.log(`[FILE INFO] Stored URL: ${fileRecord.cloudinary_url}`);
     
     // Determine resource type
     const isPdf = fileRecord.filename.toLowerCase().endsWith('.pdf');
     const isDocx = fileRecord.filename.toLowerCase().endsWith('.docx');
     const resourceType = (isPdf || isDocx) ? 'raw' : 'image';
     
-    // Generate authenticated/signed URL (valid for 1 hour)
-    const signedUrl = cloudinary.url(fileRecord.cloudinary_public_id, {
-      resource_type: resourceType,
-      type: 'upload',
-      sign_url: true,
-      secure: true
-    });
-    
-    console.log(`[FILE INFO] Generated signed URL: ${signedUrl}`);
-    
-    // Fetch from Cloudinary using signed URL
+    // Use Cloudinary API to get the resource directly
     try {
-      const cloudinaryResponse = await fetch(signedUrl);
+      const result = await cloudinary.api.resource(fileRecord.cloudinary_public_id, {
+        resource_type: resourceType
+      });
+      
+      console.log(`[FILE INFO] Cloudinary resource found: ${result.secure_url}`);
+      
+      // Fetch the file using the secure URL from the API response
+      const cloudinaryResponse = await fetch(result.secure_url);
       
       if (!cloudinaryResponse.ok) {
-        console.error(`[FILE ERROR] Cloudinary returned ${cloudinaryResponse.status}`);
+        console.error(`[FILE ERROR] Cloudinary fetch returned ${cloudinaryResponse.status}`);
         return res.status(cloudinaryResponse.status).json({ 
           error: 'Failed to fetch file from storage',
           status: cloudinaryResponse.status
@@ -459,9 +457,12 @@ app.get('/api/file/:padId/:filename', async (req, res) => {
       // Stream the file
       const buffer = await cloudinaryResponse.arrayBuffer();
       res.send(Buffer.from(buffer));
-    } catch (fetchError) {
-      console.error('[FILE ERROR] Failed to fetch from Cloudinary:', fetchError);
-      return res.status(500).json({ error: 'Failed to retrieve file' });
+    } catch (cloudinaryError) {
+      console.error('[FILE ERROR] Cloudinary API error:', cloudinaryError);
+      return res.status(500).json({ 
+        error: 'Failed to retrieve file', 
+        details: cloudinaryError.message 
+      });
     }
   } catch (error) {
     console.error('[FILE ERROR]', error);
