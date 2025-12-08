@@ -419,33 +419,49 @@ app.get('/api/file/:padId/:filename', async (req, res) => {
       return res.status(404).json({ error: 'File not found in database' });
     }
     
-    console.log(`[FILE INFO] Cloudinary URL: ${fileRecord.cloudinary_url}`);
+    if (!fileRecord.cloudinary_public_id) {
+      return res.status(404).json({ error: 'File not available' });
+    }
     
-    // Fetch from Cloudinary and proxy through our server
-    if (fileRecord.cloudinary_url) {
-      try {
-        const cloudinaryResponse = await fetch(fileRecord.cloudinary_url);
-        
-        if (!cloudinaryResponse.ok) {
-          console.error(`[FILE ERROR] Cloudinary returned ${cloudinaryResponse.status}`);
-          return res.status(cloudinaryResponse.status).json({ 
-            error: 'Failed to fetch file from storage' 
-          });
-        }
-        
-        // Set headers
-        res.setHeader('Content-Type', fileRecord.mime_type || 'application/octet-stream');
-        res.setHeader('Content-Disposition', `inline; filename="${fileRecord.original_name}"`);
-        
-        // Stream the file
-        const buffer = await cloudinaryResponse.arrayBuffer();
-        res.send(Buffer.from(buffer));
-      } catch (fetchError) {
-        console.error('[FILE ERROR] Failed to fetch from Cloudinary:', fetchError);
-        return res.status(500).json({ error: 'Failed to retrieve file' });
+    console.log(`[FILE INFO] Public ID: ${fileRecord.cloudinary_public_id}`);
+    
+    // Determine resource type
+    const isPdf = fileRecord.filename.toLowerCase().endsWith('.pdf');
+    const isDocx = fileRecord.filename.toLowerCase().endsWith('.docx');
+    const resourceType = (isPdf || isDocx) ? 'raw' : 'image';
+    
+    // Generate authenticated/signed URL (valid for 1 hour)
+    const signedUrl = cloudinary.url(fileRecord.cloudinary_public_id, {
+      resource_type: resourceType,
+      type: 'upload',
+      sign_url: true,
+      secure: true
+    });
+    
+    console.log(`[FILE INFO] Generated signed URL: ${signedUrl}`);
+    
+    // Fetch from Cloudinary using signed URL
+    try {
+      const cloudinaryResponse = await fetch(signedUrl);
+      
+      if (!cloudinaryResponse.ok) {
+        console.error(`[FILE ERROR] Cloudinary returned ${cloudinaryResponse.status}`);
+        return res.status(cloudinaryResponse.status).json({ 
+          error: 'Failed to fetch file from storage',
+          status: cloudinaryResponse.status
+        });
       }
-    } else {
-      return res.status(404).json({ error: 'File URL not available' });
+      
+      // Set headers
+      res.setHeader('Content-Type', fileRecord.mime_type || 'application/octet-stream');
+      res.setHeader('Content-Disposition', `inline; filename="${fileRecord.original_name}"`);
+      
+      // Stream the file
+      const buffer = await cloudinaryResponse.arrayBuffer();
+      res.send(Buffer.from(buffer));
+    } catch (fetchError) {
+      console.error('[FILE ERROR] Failed to fetch from Cloudinary:', fetchError);
+      return res.status(500).json({ error: 'Failed to retrieve file' });
     }
   } catch (error) {
     console.error('[FILE ERROR]', error);
