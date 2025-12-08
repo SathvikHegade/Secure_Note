@@ -326,6 +326,25 @@ async function previewFile(filename, originalName) {
     const res = await fetch(url, { method: 'GET', cache: 'no-store' });
     if (!res.ok) {
       const text = await res.text().catch(() => '');
+      // Fallback: open in new tab for mobile or restricted contexts
+      try {
+        const win = window.open(url, '_blank');
+        if (!win) {
+          // If popup blocked, offer a manual link
+          const proceed = confirm('Preview is blocked (status ' + res.status + '). Open in a new tab?');
+          if (proceed) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            a.rel = 'noopener';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          }
+        }
+      } catch (e) {
+        // Ignore window.open errors, continue to show alert below
+      }
       throw new Error(`Failed to fetch file: ${res.status} ${res.statusText} ${text}`);
     }
 
@@ -358,7 +377,22 @@ async function downloadFile(filename, originalName) {
   try {
     const url = `/api/file/${padId}/${filename}`;
     const res = await fetch(url, { method: 'GET', cache: 'no-store' });
-    if (!res.ok) throw new Error(`Server returned ${res.status}`);
+    if (!res.ok) {
+      // Fallback: try opening direct URL for download
+      try {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = originalName;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      } catch (e) {
+        // ignore
+      }
+      throw new Error(`Server returned ${res.status}`);
+    }
 
     const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
