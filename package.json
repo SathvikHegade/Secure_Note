@@ -1,7 +1,7 @@
 {
   "name": "securenote",
-  "version": "1.0.0",
-  "description": "Professional secure notepad with password protection, file uploads, and AI summarization",
+  "version": "1.1.0",
+  "description": "Professional secure notepad with password protection, file uploads, AI summarization, and email security alerts",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
