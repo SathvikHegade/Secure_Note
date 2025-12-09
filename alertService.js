@@ -40,8 +40,25 @@ function initEmailService() {
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
+      },
+      tls: {
+        rejectUnauthorized: false
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000
+    });
+    
+    // Verify connection
+    transporter.verify(function(error, success) {
+      if (error) {
+        console.error('✗ SMTP connection verification failed:', error.message);
+        console.error('  Please check your SMTP credentials and settings');
+      } else {
+        console.log('✓ SMTP server is ready to send emails');
       }
     });
+    
     console.log('✓ Email alert service initialized');
   } catch (error) {
     console.error('Email service initialization error:', error.message);
