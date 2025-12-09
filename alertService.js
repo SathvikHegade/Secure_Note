@@ -1,19 +1,42 @@
-const nodemailer = require('nodemailer');
+let nodemailer;
+try {
+  nodemailer = require('nodemailer');
+  console.log('✓ Nodemailer module loaded, version:', nodemailer.version || 'unknown');
+} catch (err) {
+  console.error('✗ Failed to load nodemailer:', err.message);
+}
 
 // Configure email transporter
 let transporter = null;
 
 function initEmailService() {
+  if (!nodemailer) {
+    console.log('⚠ Email alerts disabled - nodemailer not available');
+    return;
+  }
+
   if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
     console.log('⚠ Email alerts disabled - SMTP configuration missing');
     return;
   }
 
   try {
-    transporter = nodemailer.createTransporter({
+    console.log('Creating email transporter with:', {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT || '587',
+      user: process.env.SMTP_USER
+    });
+    
+    // Check if createTransport exists
+    if (typeof nodemailer.createTransport !== 'function') {
+      console.error('✗ nodemailer.createTransport is not a function. Module contents:', Object.keys(nodemailer));
+      return;
+    }
+    
+    transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+      secure: process.env.SMTP_SECURE === 'true',
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS
@@ -22,6 +45,7 @@ function initEmailService() {
     console.log('✓ Email alert service initialized');
   } catch (error) {
     console.error('Email service initialization error:', error.message);
+    console.error('Error stack:', error.stack);
   }
 }
 
