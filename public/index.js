@@ -91,6 +91,8 @@ function setupEventListeners() {
 function togglePasswordFields() {
   const isPrivate = els.privacyPrivate.checked;
   
+  console.log('Toggle password fields - isPrivate:', isPrivate);
+  
   if (isPrivate) {
     els.passwordFields.style.display = 'block';
     els.createPassword.required = true;
