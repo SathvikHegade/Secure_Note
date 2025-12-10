@@ -196,6 +196,37 @@
           Create My Note
         </button>
       </form>
+      
+      <script>
+        // Inline script for immediate privacy toggle functionality
+        (function() {
+          const privacyPrivate = document.getElementById('privacyPrivate');
+          const privacyPublic = document.getElementById('privacyPublic');
+          const passwordFields = document.getElementById('passwordFields');
+          const createPassword = document.getElementById('createPassword');
+          const confirmPassword = document.getElementById('confirmPassword');
+          
+          function togglePassword() {
+            if (privacyPublic.checked) {
+              passwordFields.style.display = 'none';
+              createPassword.removeAttribute('required');
+              confirmPassword.removeAttribute('required');
+              createPassword.value = '';
+              confirmPassword.value = '';
+            } else {
+              passwordFields.style.display = 'block';
+              createPassword.setAttribute('required', 'required');
+              confirmPassword.setAttribute('required', 'required');
+            }
+          }
+          
+          privacyPrivate.addEventListener('change', togglePassword);
+          privacyPublic.addEventListener('change', togglePassword);
+          
+          // Run on page load
+          togglePassword();
+        })();
+      </script>
     </div>
 
     <!-- Features Section -->
