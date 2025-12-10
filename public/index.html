@@ -56,10 +56,10 @@
     <div class="auth-card active" id="loginTab">
       <div class="auth-card-header">
         <h3>Access Your Note</h3>
-        <p>Enter your custom URL and password</p>
+        <p>Enter your custom URL (password optional for public notes)</p>
       </div>
 
-      <form id="loginForm" class="auth-form">
+      <form id="loginForm" class="auth-form" novalidate>
         <div class="form-group">
           <label for="loginUrlName">
             <span class="label-text">Custom URL Name</span>
@@ -85,14 +85,14 @@
         <div class="form-group">
           <label for="loginPassword">
             <span class="label-text">Password</span>
+            <span class="label-hint">Leave empty if public note</span>
           </label>
           <input 
             type="password" 
             id="loginPassword" 
             name="password"
-            required 
             minlength="4"
-            placeholder="Enter your password"
+            placeholder="Enter password (optional for public notes)"
             autocomplete="current-password"
           >
         </div>
