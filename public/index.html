@@ -205,6 +205,7 @@
           const passwordFields = document.getElementById('passwordFields');
           const createPassword = document.getElementById('createPassword');
           const confirmPassword = document.getElementById('confirmPassword');
+          const createError = document.getElementById('createError');
           
           function togglePassword() {
             if (privacyPublic.checked) {
@@ -213,6 +214,11 @@
               confirmPassword.removeAttribute('required');
               createPassword.value = '';
               confirmPassword.value = '';
+              // Clear error message
+              if (createError) {
+                createError.textContent = '';
+                createError.className = 'error-message hidden';
+              }
             } else {
               passwordFields.style.display = 'block';
               createPassword.setAttribute('required', 'required');

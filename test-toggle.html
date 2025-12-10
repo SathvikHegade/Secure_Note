@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Toggle</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .form-group { margin: 20px 0; }
+    label { display: block; margin: 10px 0; }
+    input[type="text"], input[type="password"] { 
+      padding: 8px; 
+      width: 300px; 
+      margin: 5px 0;
+    }
+    #passwordFields { 
+      border: 2px solid red; 
+      padding: 15px; 
+      margin: 15px 0;
+      background: #ffe0e0;
+    }
+    button { padding: 10px 20px; background: blue; color: white; border: none; }
+  </style>
+</head>
+<body>
+  <h1>Privacy Toggle Test</h1>
+  
+  <div class="form-group">
+    <label>Note Privacy</label>
+    <label>
+      <input type="radio" name="notePrivacy" value="private" checked id="privacyPrivate">
+      Private (Password Required)
+    </label>
+    <label>
+      <input type="radio" name="notePrivacy" value="public" id="privacyPublic">
+      Public (URL Only)
+    </label>
+  </div>
+
+  <div id="passwordFields">
+    <h3>PASSWORD FIELDS SECTION</h3>
+    <div class="form-group">
+      <label for="createPassword">Password</label>
+      <input type="password" id="createPassword" required>
+    </div>
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" id="confirmPassword" required>
+    </div>
+  </div>
+
+  <button onclick="alert('Public checked: ' + document.getElementById('privacyPublic').checked)">
+    Check Status
+  </button>
+
+  <script>
+    console.log('Script starting...');
+    
+    const privacyPrivate = document.getElementById('privacyPrivate');
+    const privacyPublic = document.getElementById('privacyPublic');
+    const passwordFields = document.getElementById('passwordFields');
+    const createPassword = document.getElementById('createPassword');
+    const confirmPassword = document.getElementById('confirmPassword');
+    
+    console.log('Elements found:', {
+      privacyPrivate: !!privacyPrivate,
+      privacyPublic: !!privacyPublic,
+      passwordFields: !!passwordFields
+    });
+    
+    function togglePassword() {
+      console.log('togglePassword called, public checked:', privacyPublic.checked);
+      
+      if (privacyPublic.checked) {
+        console.log('Hiding password fields');
+        passwordFields.style.display = 'none';
+        createPassword.removeAttribute('required');
+        confirmPassword.removeAttribute('required');
+      } else {
+        console.log('Showing password fields');
+        passwordFields.style.display = 'block';
+        createPassword.setAttribute('required', 'required');
+        confirmPassword.setAttribute('required', 'required');
+      }
+    }
+    
+    privacyPrivate.addEventListener('change', function() {
+      console.log('Private radio changed');
+      togglePassword();
+    });
+    
+    privacyPublic.addEventListener('change', function() {
+      console.log('Public radio changed');
+      togglePassword();
+    });
+    
+    // Run on page load
+    console.log('Running initial toggle');
+    togglePassword();
+    
+    console.log('Script completed');
+  </script>
+</body>
+</html>
