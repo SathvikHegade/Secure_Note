@@ -147,10 +147,7 @@ async function handleLogin(e) {
     return;
   }
   
-  if (!password || password.length < 4) {
-    showError(els.loginError, 'Password must be at least 4 characters');
-    return;
-  }
+  // Password validation removed - backend will check if it's public
   
   // Disable submit button
   els.loginSubmit.disabled = true;
@@ -167,7 +164,7 @@ async function handleLogin(e) {
     
     if (res.ok && data.success) {
       // Store credentials in sessionStorage
-      sessionStorage.setItem('padAuth', JSON.stringify({ urlName, password }));
+      sessionStorage.setItem('padAuth', JSON.stringify({ urlName, password: password || '' }));
       
       // Redirect to pad
       window.location.href = `/pad/${urlName}`;

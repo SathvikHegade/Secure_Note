@@ -171,26 +171,35 @@ app.post('/api/login', async (req, res) => {
   try {
     const { urlName, password } = req.body;
     
-    if (!urlName || !password) {
-      return res.status(400).json({ error: 'URL name and password are required' });
+    if (!urlName) {
+      return res.status(400).json({ error: 'URL name is required' });
     }
     
     // Check if pad exists
     const pad = await db.getPad(urlName);
     if (!pad) {
-      return res.status(401).json({ error: 'Incorrect URL or password.' });
+      return res.status(401).json({ error: 'Note not found' });
     }
     
-    // Verify password
+    // If note is public, allow access without password
+    if (pad.is_public) {
+      return res.json({ success: true, padId: urlName, isPublic: true });
+    }
+    
+    // For private notes, verify password
+    if (!password) {
+      return res.status(400).json({ error: 'Password is required for private notes' });
+    }
+    
     const isValid = await verifyPassword(password, pad.password_hash);
     if (!isValid) {
-      return res.status(401).json({ error: 'Incorrect URL or password.' });
+      return res.status(401).json({ error: 'Incorrect password' });
     }
     
-    res.json({ success: true, padId: urlName });
+    res.json({ success: true, padId: urlName, isPublic: false });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(401).json({ error: 'Incorrect URL or password.' });
+    res.status(401).json({ error: 'Failed to access note' });
   }
 });
 
