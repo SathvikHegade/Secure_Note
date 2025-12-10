@@ -44,6 +44,7 @@ let checkUrlTimeout = null;
 function init() {
   setupEventListeners();
   setupDarkMode();
+  togglePasswordFields(); // Initialize password field visibility
   console.log('✓ Homepage initialized');
 }
 
