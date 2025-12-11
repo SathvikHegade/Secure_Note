@@ -1,10 +1,14 @@
 # SecureNote
 
-Secure, shareable notes with optional passwords, AI summaries, Cloudinary uploads, and automatic 24-hour cleanup.
+A secure note-taking platform with AI summaries, Cloudinary uploads, and auto-expiring private notes.
+
+![Build](https://img.shields.io/badge/build-passing-brightgreen) ![Node](https://img.shields.io/badge/node-%3E%3D18-339933) ![PostgreSQL](https://img.shields.io/badge/postgresql-15+-336791) ![License](https://img.shields.io/badge/license-MIT-blue) ![PRs](https://img.shields.io/badge/PRs-welcome-ff69b4)
 
 **Live Demo:** https://secure-pad-pro-15.onrender.com
 
-## Highlights
+## Table of Contents
+[Features at a Glance](#features-at-a-glance) · [Quick Start](#quick-start) · [Tech Stack](#tech-stack) · [Architecture](#architecture) · [Screenshots](#screenshots) · [Documentation](#documentation) · [Deployment](#deployment) · [Key Endpoints](#key-endpoints) · [Testing & Monitoring](#testing--monitoring) · [Usage Tips](#usage-tips) · [Maintainer](#maintainer) · [About Me](#about-me) · [Roadmap](#roadmap)
+## Features at a Glance
 
 - Custom URLs with public or bcrypt-protected private notes.
 - Auto-save every two seconds and auto-delete 24 hours after the last edit.
@@ -76,8 +80,7 @@ npm start               # or npm run dev
 - For public notes, leave the password field empty on the access form.
 - Re-save content after major edits to restart the 24-hour retention window.
 - Use dark mode before lengthy writing sessions to reduce eye strain.
-- Upload optimized PDFs or images under 10 MB for faster load times.
-- Download important files promptly—attachments expire after 24 hours.
+- Upload optimized PDFs or images under 10 MB for faster load times and download important files promptly—they expire after 24 hours.
 
 ## Maintainer
 
