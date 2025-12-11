@@ -33,7 +33,7 @@ A modern, secure note-taking platform with **public/private notes**, **custom UR
 
 Secure notes with custom URLs, optional passwords, AI summaries, Cloudinary uploads, and automatic 24-hour cleanup.
 
-**Live Demo**: https://your-production-url.com (update when deployed)
+**Live Demo**: https://secure-pad-pro-15.onrender.com
 
 ## Highlights
 
