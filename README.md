@@ -6,11 +6,11 @@ Secure, shareable notes with optional passwords, AI summaries, Cloudinary upload
 
 ## Highlights
 
-- Custom URLs with public or bcrypt-protected private notes
-- Auto-save every 2 seconds and auto-delete 24 hours after last edit
-- Google Gemini summaries with document insights
-- Cloudinary uploads (PDF, JPG, PNG, DOCX up to 10 MB)
-- Responsive UI, dark mode, and security logging backed by PostgreSQL
+- Custom URLs with public or bcrypt-protected private notes.
+- Auto-save every two seconds and auto-delete 24 hours after the last edit.
+- Google Gemini summaries with document-level insights.
+- Cloudinary uploads (PDF, JPG, PNG, DOCX up to 10 MB).
+- Responsive UI, dark mode, and security logging backed by PostgreSQL.
 
 ## Quick Start
 
@@ -22,15 +22,15 @@ npm start               # or npm run dev
 
 ## Tech Stack
 
-- Node.js · Express · PostgreSQL · Cloudinary · bcrypt
-- Frontend: HTML5, CSS3, vanilla JavaScript
-- AI: Google Gemini 2.5 Flash (@google/generative-ai)
+- Node.js · Express · PostgreSQL · Cloudinary · bcrypt.
+- Frontend: HTML5, CSS3, vanilla JavaScript.
+- AI: Google Gemini 2.5 Flash (@google/generative-ai).
 
 ## Architecture
 
-- Browser: index.html (create/access), pad.html (editor)
-- API: server.js for auth, content, uploads, AI, cleanup jobs
-- Data: PostgreSQL tables (pads, files, security_logs) + Cloudinary CDN
+- Browser: index.html (create/access), pad.html (editor).
+- API: server.js for auth, content, uploads, AI, and cleanup jobs.
+- Data: PostgreSQL tables (pads, files, security_logs) plus Cloudinary CDN.
 
 ## Screenshots
 
@@ -42,13 +42,56 @@ npm start               # or npm run dev
 
 ## Documentation
 
-- docs/SETUP.md – local setup & environment
-- docs/API.md – endpoint reference
-- docs/SECURITY.md – authentication & hardening
-- docs/DB_SCHEMA.md – PostgreSQL schema
-- docs/DEPLOY.md – Render/Railway guides
-- docs/TROUBLESHOOTING.md – common fixes
+- docs/SETUP.md – local setup & environment.
+- docs/API.md – endpoint reference.
+- docs/SECURITY.md – authentication & hardening.
+- docs/DB_SCHEMA.md – PostgreSQL schema.
+- docs/DEPLOY.md – Render/Railway guides.
+- docs/TROUBLESHOOTING.md – common fixes.
+
+## Deployment
+
+- Deploy-ready on Render or Railway using render.yaml.
+- Requires DATABASE_URL, GEMINI_API_KEY, and Cloudinary credentials.
+- Health-check endpoint: GET https://your-app.onrender.com/health.
+
+## Key Endpoints
+
+- `POST /api/create-pad` – create a public or private note.
+- `POST /api/login` – authenticate (skips password for public notes).
+- `POST /api/pad/:padId/save` – persist content and reset the auto-delete timer.
+- `POST /api/upload/:padId` – upload attachments to Cloudinary.
+- `POST /api/summarize/:padId` – request a Gemini summary.
+
+## Testing & Monitoring
+
+- Run `npm test` (when available) or manual smoke tests after deployment.
+- Verify auto-delete by editing a note and checking database timestamps.
+- Configure uptime pings against `/health` every five minutes.
+- Enable PostgreSQL backups and Cloudinary usage alerts.
+
+## Usage Tips
+
+- Bookmark your note URL; private notes require the matching password.
+- For public notes, leave the password field empty on the access form.
+- Re-save content after major edits to restart the 24-hour retention window.
+- Use dark mode before lengthy writing sessions to reduce eye strain.
+- Upload optimized PDFs or images under 10 MB for faster load times.
+- Download important files promptly—attachments expire after 24 hours.
 
 ## Maintainer
 
 T S Sathvik Hegade · sathvikhegade3@gmail.com · MIT License
+
+## About Me
+
+- Engineering student at BMS Institute of Technology and Management.
+- Skilled in Machine Learning, Deep Learning, C++, Python, and full-stack web development.
+- Passionate about building secure, user-friendly productivity tools.
+
+## Roadmap
+
+- Multi-factor authentication for private notes.
+- Markdown editing experience with export options.
+- Collaboration mode with real-time presence and history.
+- Native mobile shell for quick capture on Android/iOS.
