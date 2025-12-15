@@ -623,7 +623,11 @@ function formatRetention(minutes) {
 
 function updateRetentionUI() {
   if (els.retentionInfo) {
-    els.retentionInfo.textContent = `Content and files auto-delete after ${formatRetention(currentRetentionMinutes)}.`;
+    if (isPublicPad) {
+      els.retentionInfo.textContent = `Content and files auto-delete after ${formatRetention(currentRetentionMinutes)}.`;
+    } else {
+      els.retentionInfo.textContent = 'Private note: content and files never expire.';
+    }
     els.retentionInfo.style.color = '';
   }
 
