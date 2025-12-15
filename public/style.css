@@ -746,38 +746,52 @@ body {
 /* Info Sections */
 .info-section {
   margin-bottom: 2rem;
-  padding-bottom: 0.5rem;
+  padding: 1rem 0.5rem 1rem 0.5rem;
 }
 
 .info-section h3 {
   font-size: 1.1rem;
   margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
   color: var(--primary);
 }
 
 .info-section h4 {
   font-size: 1rem;
   margin-bottom: 0.75rem;
-  margin-top: 1.25rem;
+  margin-top: 1.5rem;
+  padding-top: 0.25rem;
 }
 
 .info-section ul {
   margin-left: 1.5rem;
   margin-top: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+.info-section ul li {
+  margin-bottom: 0.75rem;
+  line-height: 1.8;
+  padding-left: 0.25rem;
 }
 
 .info-section p {
-  margin-bottom: 0.75rem;
-  line-height: 1.7;
+  margin-bottom: 1rem;
+  line-height: 1.8;
+  padding: 0.25rem 0;
 }
 
 .info-footer {
   margin-top: 2rem;
-  padding-top: 1rem;
+  padding: 1.5rem 0.5rem 0.5rem 0.5rem;
   border-top: 1px solid var(--border);
   text-align: center;
   color: var(--text-light);
   font-size: 0.875rem;
+}
+
+.info-footer p {
+  margin: 0.5rem 0;
 }
 
 /* Utility */
