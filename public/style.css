@@ -19,9 +19,9 @@
   --text: #111827;
   --text-light: #6b7280;
   --border: #e5e7eb;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   --radius: 0.5rem;
   --radius-lg: 0.75rem;
 }
@@ -185,6 +185,7 @@ body {
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -548,7 +549,8 @@ body {
   margin-bottom: 1rem;
 }
 
-.upload-zone:hover, .upload-zone.drag-over {
+.upload-zone:hover,
+.upload-zone.drag-over {
   border-color: var(--primary);
   background: #edf2f7;
 }
@@ -651,7 +653,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -721,7 +723,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Summary Display */
@@ -806,15 +810,15 @@ body {
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-  
+
   .header-content h1 {
     font-size: 1.1rem;
   }
-  
+
   .header-actions {
     gap: 0.5rem;
   }
-  
+
   .pad-id {
     font-size: 0.75rem;
     max-width: 120px;
@@ -822,64 +826,68 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  
+
   .icon-btn {
     padding: 0.375rem;
     font-size: 1rem;
   }
-  
+
   .home-hero h2 {
     font-size: 1.75rem;
   }
-  
+
   .hero-subtitle {
     font-size: 1rem;
   }
-  
+
   .tab-btn {
     font-size: 0.875rem;
     padding: 0.875rem 1rem;
   }
-  
+
   .auth-card {
     padding: 1.5rem;
   }
-  
+
   .auth-box {
     padding: 1.5rem;
     margin: 1rem;
   }
-  
+
   .features-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .main-content {
     padding: 1rem;
     gap: 1rem;
   }
-  
+
   .editor-section,
   .files-section {
     padding: 1rem;
   }
-  
+
   .editor-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.75rem;
   }
-  
+
   .editor-actions {
     width: 100%;
     justify-content: space-between;
   }
-  
+
   #editor {
-    min-height: 250px;
-    font-size: 16px; /* Prevents iOS zoom on focus */
+    min-height: 500px;
+    /* Significantly larger for mobile readability */
+    font-size: 16px;
+    /* Prevents iOS zoom on focus */
+    max-height: 70vh;
+    /* Don't let it take entire screen */
   }
-  
+
   /* File items responsive */
   .file-item {
     flex-direction: column;
@@ -887,26 +895,26 @@ body {
     gap: 0.75rem;
     padding: 0.875rem;
   }
-  
+
   .file-info-text {
     width: 100%;
   }
-  
+
   .file-name {
     font-size: 0.9rem;
     word-break: break-all;
   }
-  
+
   .file-meta {
     font-size: 0.7rem;
   }
-  
+
   .file-actions {
     width: 100%;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-  
+
   .file-actions .btn {
     flex: 1;
     min-width: 80px;
@@ -914,53 +922,53 @@ body {
     padding: 0.625rem 0.5rem;
     font-size: 0.75rem;
   }
-  
+
   .btn-sm {
     padding: 0.5rem 0.625rem;
     font-size: 0.75rem;
   }
-  
+
   /* Upload zone mobile */
   .upload-zone {
     padding: 1.5rem 1rem;
   }
-  
+
   .upload-icon {
     font-size: 2rem;
   }
-  
+
   .upload-content p {
     font-size: 0.9rem;
   }
-  
+
   .upload-hint {
     font-size: 0.75rem;
   }
-  
+
   /* Modal mobile */
   .modal {
     padding: 0.5rem;
     align-items: flex-start;
     padding-top: 2rem;
   }
-  
+
   .modal-content {
     max-height: 90vh;
     border-radius: 0.5rem;
   }
-  
+
   .modal-header {
     padding: 1rem;
   }
-  
+
   .modal-header h2 {
     font-size: 1.25rem;
   }
-  
+
   .modal-body {
     padding: 1rem;
   }
-  
+
   /* Prevent body scroll when modal is open */
   body.modal-open {
     overflow: hidden;
@@ -974,29 +982,30 @@ body {
   .header-content h1 {
     font-size: 1rem;
   }
-  
+
   .pad-id {
     display: none;
   }
-  
+
   .auth-box h2 {
     font-size: 1.5rem;
   }
-  
+
   .file-actions {
     flex-direction: column;
   }
-  
+
   .file-actions .btn {
     width: 100%;
   }
-  
+
   .section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
 }
+
 /* Developer Section Styles */
 .developer-section {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1008,14 +1017,14 @@ body {
 
 .developer-section h3 {
   color: white;
-  border-bottom-color: rgba(255,255,255,0.3);
+  border-bottom-color: rgba(255, 255, 255, 0.3);
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
 }
 
 .developer-section h4 {
   color: white;
-  border-bottom-color: rgba(255,255,255,0.3);
+  border-bottom-color: rgba(255, 255, 255, 0.3);
   margin-bottom: 0.75rem;
 }
 
@@ -1045,7 +1054,7 @@ body {
 
 .developer-info p {
   margin-bottom: 0.75rem;
-  color: rgba(255,255,255,0.95);
+  color: rgba(255, 255, 255, 0.95);
   line-height: 1.6;
 }
 
@@ -1055,7 +1064,7 @@ body {
 .report-section {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255,255,255,0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   width: 100%;
 }
 
@@ -1068,7 +1077,7 @@ body {
 }
 
 .skill-tag {
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   padding: 0.625rem 1.25rem;
   border-radius: 1.5rem;
   font-size: 0.875rem;
@@ -1078,7 +1087,7 @@ body {
 
 .contact-link {
   display: inline-block;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
   color: white;
@@ -1089,15 +1098,15 @@ body {
 }
 
 .contact-link:hover {
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
 }
 
 .report-notice {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   padding: 1rem 1.25rem;
   border-radius: 0.5rem;
   font-size: 0.875rem;
-  color: rgba(255,255,255,0.95);
+  color: rgba(255, 255, 255, 0.95);
   line-height: 1.6;
   margin-top: 0.5rem;
 }
@@ -1113,7 +1122,7 @@ body.dark-mode {
 
 body.dark-mode .app-header {
   background: var(--surface);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 body.dark-mode .auth-box,

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Sathvik - SecureNote Developer</title>
+    <meta name="description"
+        content="Portfolio and professional profile of T S Sathvik Hegade, developer of SecureNote.">
+
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/portfolio.css">
+    <link rel="stylesheet" href="/animations.css">
+    <link rel="stylesheet" href="/enhanced-styles.css">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body class="portfolio-page">
+
+    <!-- Navigation -->
+    <header class="app-header" style="position: sticky; top: 0; z-index: 100;">
+        <div class="header-content portfolio-container">
+            <a href="/" style="text-decoration: none; display: flex; align-items: center; gap: 0.75rem;">
+                <img src="/icon.svg" alt="SecureNote Logo" width="32" height="32">
+                <h1>SecureNote</h1>
+            </a>
+            <div class="header-actions">
+                <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <a href="/" class="btn btn-secondary btn-sm">Back to App</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="about-hero animate-fadeIn">
+            <div class="portfolio-container">
+                <div class="profile-img-container">
+                    <img src="/developer.jpg" alt="Sathvik Hegade" class="profile-img"
+                        onerror="this.src='https://ui-avatars.com/api/?name=Sathvik+Hegade&background=2563eb&color=fff&size=200'">
+                </div>
+
+                <h1 class="hero-name animate-fadeInUp delay-100">T S Sathvik Hegade</h1>
+                <div class="hero-tagline animate-fadeInUp delay-200">Aspiring Software Engineer & Machine Learning
+                    Enthusiast</div>
+
+                <div class="hero-bio animate-fadeInUp delay-300">
+                    <p>
+                        I am a passionate engineering student at BMS Institute of Technology and Management, dedicated
+                        to building secure, scalable, and user-centric applications. With a strong foundation in modern
+                        web technologies and a keen interest in AI/ML, I strive to create software that solves
+                        real-world problems with elegance and efficiency.
+                    </p>
+                </div>
+
+                <div class="social-links animate-fadeInUp delay-400">
+                    <a href="mailto:sathvikhegade3@gmail.com" class="social-btn primary">
+                        📧 Contact Me
+                    </a>
+                    <a href="#" class="social-btn">
+                        💼 LinkedIn
+                    </a>
+                    <a href="#" class="social-btn">
+                        🐙 GitHub
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Highlights Grid -->
+        <section class="portfolio-container animate-slideInUp delay-500">
+            <div class="highlights-grid">
+                <div class="highlight-card">
+                    <div class="card-icon">🎓</div>
+                    <h3 class="card-title">Education</h3>
+                    <p class="card-desc">Pursuing B.E. in Computer Science at BMS Institute of Technology and
+                        Management. Focused on core engineering principles and advanced algorithms.</p>
+                </div>
+
+                <div class="highlight-card">
+                    <div class="card-icon">🚀</div>
+                    <h3 class="card-title">Current Focus</h3>
+                    <p class="card-desc">Deepening expertise in Full Stack Development and exploring the frontiers of
+                        Deep Learning and Neural Networks.</p>
+                </div>
+
+                <div class="highlight-card">
+                    <div class="card-icon">💻</div>
+                    <h3 class="card-title">Development Philosophy</h3>
+                    <p class="card-desc">I believe in clean code, secure architecture, and intuitive user experiences.
+                        "SecureNote" is a testament to these values.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="portfolio-container skills-wrapper">
+            <h2 class="section-title" data-scroll>Technical Expertise</h2>
+
+            <div class="skills-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem;">
+                <!-- Languages -->
+                <div class="skill-category" data-scroll>
+                    <h3 class="skill-cat-title">⚡ Languages & Core</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">JavaScript (ES6+)</span>
+                        <span class="skill-tag">Python</span>
+                        <span class="skill-tag">C++</span>
+                        <span class="skill-tag">HTML5 & CSS3</span>
+                        <span class="skill-tag">SQL</span>
+                    </div>
+                </div>
+
+                <!-- Frameworks -->
+                <div class="skill-category" data-scroll>
+                    <h3 class="skill-cat-title">🛠️ Frameworks & Tools</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Node.js</span>
+                        <span class="skill-tag">React</span>
+                        <span class="skill-tag">PostgreSQL</span>
+                        <span class="skill-tag">Git & GitHub</span>
+                        <span class="skill-tag">VS Code</span>
+                    </div>
+                </div>
+
+                <!-- Specialized -->
+                <div class="skill-category" data-scroll>
+                    <h3 class="skill-cat-title">🧠 Specialized Areas</h3>
+                    <div class="skill-tags">
+                        <span class="skill-tag">Machine Learning</span>
+                        <span class="skill-tag">Deep Learning</span>
+                        <span class="skill-tag">Web Security</span>
+                        <span class="skill-tag">API Design</span>
+                        <span class="skill-tag">Responsive Design</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline Section -->
+        <section class="portfolio-container">
+            <h2 class="section-title" data-scroll>My Journey</h2>
+
+            <div class="timeline">
+                <!-- Item 1 -->
+                <div class="timeline-item" data-scroll>
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-date">2024 - Present</div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <div class="timeline-title">SecureNote Project</div>
+                            <div class="timeline-subtitle">Lead Developer</div>
+                        </div>
+                        <p class="timeline-desc">Architected and built a secure, full-stack note-taking application.
+                            Implemented end-to-end encryption, AI summarization, and a modern responsive interface.</p>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="timeline-item" data-scroll>
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-date">2023 - Present</div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <div class="timeline-title">BMS Institute of Tech & Mgmt</div>
+                            <div class="timeline-subtitle">Engineering Student</div>
+                        </div>
+                        <p class="timeline-desc">Advancing through rigorous coursework in Computer Science. Active
+                            participant in coding clubs and technical hackathons.</p>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="timeline-item" data-scroll>
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-date">2023</div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <div class="timeline-title">ML & AI Research</div>
+                            <div class="timeline-subtitle">Independent Study</div>
+                        </div>
+                        <p class="timeline-desc">Started exploring Machine Learning fundamentals. Completed projects
+                            involving data analysis and predictive modeling using Python.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact CTA -->
+        <section class="footer-contact">
+            <div class="portfolio-container">
+                <div class="contact-card" data-scroll>
+                    <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--port-secondary);">Let's Work Together
+                    </h2>
+                    <p style="color: var(--port-text-light); margin-bottom: 2rem; font-size: 1.1rem;">
+                        Always open to discussing new projects, creative ideas, or opportunities to be part of your
+                        vision.
+                    </p>
+                    <a href="mailto:sathvikhegade3@gmail.com" class="button btn-primary"
+                        style="padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 2rem; text-decoration: none; display: inline-block;">
+                        Get In Touch
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer"
+        style="border-top: 1px solid var(--port-border); padding: 2rem 0; margin-top: 0; background: var(--port-bg);">
+        <div class="footer-content" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+            <div class="footer-links" style="display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;">
+                <a href="#" style="color: var(--port-text-light); text-decoration: none; font-size: 0.9rem;">Terms of
+                    Service</a>
+                <a href="#" style="color: var(--port-text-light); text-decoration: none; font-size: 0.9rem;">Privacy
+                    Policy</a>
+                <a href="#" style="color: var(--port-text-light); text-decoration: none; font-size: 0.9rem;">User
+                    Agreement</a>
+                <a href="#"
+                    style="color: var(--port-text-light); text-decoration: none; font-size: 0.9rem;">Accessibility</a>
+            </div>
+            <p style="color: var(--port-text); font-weight: 500; font-size: 0.95rem; margin: 0;">built by Sathvik Hegade
+            </p>
+            <p style="color: var(--port-text-light); font-size: 0.85rem; margin: 0;">SecureNote © 2026. All rights
+                reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="/interactive.js"></script>
+    <script>
+        // Initialize Scroll Animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle Logic (Borrowed from main app)
+            const toggle = document.getElementById('themeToggle');
+
+            // Check saved preference
+            if (localStorage.getItem('theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                updateIcon(true);
+            }
+
+            toggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                updateIcon(isDark);
+            });
+
+            function updateIcon(isDark) {
+                toggle.innerHTML = isDark
+                    ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
+                    : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+            }
+
+            // Scroll Animation Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fadeInUp');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('[data-scroll]').forEach(el => observer.observe(el));
+
+            // Initialize interactive components
+            new Tooltip();
+        });
+    </script>
+</body>
+
+</html>

@@ -19,8 +19,13 @@
   <!-- Header -->
   <header class="app-header">
     <div class="header-content">
-      <h1>SecureNote</h1>
+      <div class="brand-logo" style="display: flex; align-items: center; gap: 0.75rem;">
+        <img src="/icon.svg" alt="SecureNote Logo" width="32" height="32">
+        <h1>SecureNote</h1>
+      </div>
       <div class="header-actions">
+        <a href="/about.html" class="btn btn-secondary btn-sm"
+          style="margin-right: 0.5rem; text-decoration: none;">About</a>
         <button class="icon-btn" id="themeToggle" title="Toggle Dark Mode" aria-label="Toggle theme">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -69,18 +74,8 @@
           </label>
           <div class="url-input-group">
             <span class="url-prefix">/note/</span>
-            <input 
-              type="text" 
-              id="loginUrlName" 
-              name="urlName"
-              required 
-              minlength="3"
-              maxlength="50"
-              pattern="[a-zA-Z0-9_-]+"
-              placeholder="myproject123"
-              autocomplete="off"
-              spellcheck="false"
-            >
+            <input type="text" id="loginUrlName" name="urlName" required minlength="3" maxlength="50"
+              pattern="[a-zA-Z0-9_-]+" placeholder="myproject123" autocomplete="off" spellcheck="false">
           </div>
         </div>
 
@@ -89,14 +84,8 @@
             <span class="label-text">Password</span>
             <span class="label-hint">Leave empty if public note</span>
           </label>
-          <input 
-            type="password" 
-            id="loginPassword" 
-            name="password"
-            minlength="4"
-            placeholder="Enter password (optional for public notes)"
-            autocomplete="current-password"
-          >
+          <input type="password" id="loginPassword" name="password" minlength="4"
+            placeholder="Enter password (optional for public notes)" autocomplete="current-password">
         </div>
 
         <div id="loginError" class="error-message hidden"></div>
@@ -122,18 +111,8 @@
           </label>
           <div class="url-input-group">
             <span class="url-prefix">/note/</span>
-            <input 
-              type="text" 
-              id="createUrlName" 
-              name="urlName"
-              required 
-              minlength="3"
-              maxlength="50"
-              pattern="[a-zA-Z0-9_-]+"
-              placeholder="myproject123"
-              autocomplete="off"
-              spellcheck="false"
-            >
+            <input type="text" id="createUrlName" name="urlName" required minlength="3" maxlength="50"
+              pattern="[a-zA-Z0-9_-]+" placeholder="myproject123" autocomplete="off" spellcheck="false">
           </div>
           <div id="urlAvailability" class="input-feedback hidden"></div>
         </div>
@@ -145,7 +124,8 @@
           </label>
           <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-              <input type="radio" name="notePrivacy" value="private" checked style="cursor: pointer;" id="privacyPrivate">
+              <input type="radio" name="notePrivacy" value="private" checked style="cursor: pointer;"
+                id="privacyPrivate">
               <span>Private (Password Required)</span>
             </label>
             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
@@ -164,7 +144,8 @@
             <span class="label-text">Auto-Delete Timer</span>
             <span class="label-hint">Choose how long content and files stay available</span>
           </label>
-          <select id="retentionMinutes" name="retentionMinutes" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 0.5rem; font-size: 1rem;">
+          <select id="retentionMinutes" name="retentionMinutes"
+            style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 0.5rem; font-size: 1rem;">
             <option value="60">1 hour</option>
             <option value="360">6 hours</option>
             <option value="720">12 hours</option>
@@ -180,30 +161,16 @@
               <span class="label-text">Password</span>
               <span class="label-hint">At least 4 characters</span>
             </label>
-            <input 
-              type="password" 
-              id="createPassword" 
-              name="password"
-              required 
-              minlength="4"
-              placeholder="Create a secure password"
-              autocomplete="new-password"
-            >
+            <input type="password" id="createPassword" name="password" required minlength="4"
+              placeholder="Create a secure password" autocomplete="new-password">
           </div>
 
           <div class="form-group">
             <label for="confirmPassword">
               <span class="label-text">Confirm Password</span>
             </label>
-            <input 
-              type="password" 
-              id="confirmPassword" 
-              name="confirmPassword"
-              required 
-              minlength="4"
-              placeholder="Re-enter your password"
-              autocomplete="new-password"
-            >
+            <input type="password" id="confirmPassword" name="confirmPassword" required minlength="4"
+              placeholder="Re-enter your password" autocomplete="new-password">
           </div>
         </div>
 
@@ -213,12 +180,12 @@
           Create My Note
         </button>
       </form>
-      
+
       <script>
         // Inline script for immediate privacy toggle functionality
-        (function() {
+        (function () {
           console.log('[PRIVACY TOGGLE] Script loaded');
-          
+
           const privacyPrivate = document.getElementById('privacyPrivate');
           const privacyPublic = document.getElementById('privacyPublic');
           const passwordFields = document.getElementById('passwordFields');
@@ -226,18 +193,18 @@
           const confirmPassword = document.getElementById('confirmPassword');
           const createError = document.getElementById('createError');
           const retentionFields = document.getElementById('retentionFields');
-          
+
           console.log('[PRIVACY TOGGLE] Elements found:', {
             privacyPrivate: !!privacyPrivate,
             privacyPublic: !!privacyPublic,
             passwordFields: !!passwordFields,
             retentionFields: !!retentionFields
           });
-          
+
           function togglePassword() {
             const isPublic = privacyPublic && privacyPublic.checked;
             console.log('[PRIVACY TOGGLE] Toggle called, isPublic:', isPublic);
-            
+
             if (isPublic) {
               console.log('[PRIVACY TOGGLE] Hiding password fields');
               passwordFields.style.display = 'none';
@@ -263,17 +230,17 @@
               }
             }
           }
-          
+
           if (privacyPrivate && privacyPublic) {
-            privacyPrivate.addEventListener('change', function() {
+            privacyPrivate.addEventListener('change', function () {
               console.log('[PRIVACY TOGGLE] Private selected');
               togglePassword();
             });
-            privacyPublic.addEventListener('change', function() {
+            privacyPublic.addEventListener('change', function () {
               console.log('[PRIVACY TOGGLE] Public selected');
               togglePassword();
             });
-            
+
             // Run on page load
             togglePassword();
             console.log('[PRIVACY TOGGLE] Initial toggle complete');
@@ -329,7 +296,9 @@
           <div class="accordion-header">How secure are my notes?</div>
           <div class="accordion-content">
             <div class="accordion-content-inner">
-              Your notes are protected with bcrypt password hashing (10 rounds). Private notes require a password to access, and all data is securely stored in PostgreSQL. Only you have access to your notes with the correct URL and password combination.
+              Your notes are protected with bcrypt password hashing (10 rounds). Private notes require a password to
+              access, and all data is securely stored in PostgreSQL. Only you have access to your notes with the correct
+              URL and password combination.
             </div>
           </div>
         </div>
@@ -337,7 +306,9 @@
           <div class="accordion-header">What's the difference between public and private notes?</div>
           <div class="accordion-content">
             <div class="accordion-content-inner">
-              Private notes require a password and never expire. Public notes don't require a password but auto-delete after your chosen time period (1 hour to 7 days). Choose public for temporary sharing and private for long-term storage.
+              Private notes require a password and never expire. Public notes don't require a password but auto-delete
+              after your chosen time period (1 hour to 7 days). Choose public for temporary sharing and private for
+              long-term storage.
             </div>
           </div>
         </div>
@@ -345,7 +316,8 @@
           <div class="accordion-header">How does auto-save work?</div>
           <div class="accordion-content">
             <div class="accordion-content-inner">
-              Your changes are automatically saved 2 seconds after you stop typing. You'll see a "Saved" indicator when your content is safely stored. No need to manually save!
+              Your changes are automatically saved 2 seconds after you stop typing. You'll see a "Saved" indicator when
+              your content is safely stored. No need to manually save!
             </div>
           </div>
         </div>
@@ -353,7 +325,8 @@
           <div class="accordion-header">What file types can I upload?</div>
           <div class="accordion-content">
             <div class="accordion-content-inner">
-              You can upload PDF, JPG, PNG, and DOCX files up to 10MB each. Files are stored securely on Cloudinary CDN for fast access. File expiration follows your note's retention settings.
+              You can upload PDF, JPG, PNG, and DOCX files up to 10MB each. Files are stored securely on Cloudinary CDN
+              for fast access. File expiration follows your note's retention settings.
             </div>
           </div>
         </div>
@@ -361,7 +334,8 @@
           <div class="accordion-header">How does AI summarization work?</div>
           <div class="accordion-content">
             <div class="accordion-content-inner">
-              Click the "Summarize" button to generate an AI-powered summary using Google Gemini 2.5 Flash. It analyzes your note content and provides key insights, statistics, and a concise overview.
+              Click the "Summarize" button to generate an AI-powered summary using Google Gemini 2.5 Flash. It analyzes
+              your note content and provides key insights, statistics, and a concise overview.
             </div>
           </div>
         </div>
@@ -392,7 +366,7 @@
         <div class="info-section">
           <h4>Privacy & Security</h4>
           <p>
-            Your notes are stored securely with bcrypt password hashing (10 rounds). 
+            Your notes are stored securely with bcrypt password hashing (10 rounds).
             Only you can access your note with the correct URL and password combination.
           </p>
         </div>
@@ -409,35 +383,15 @@
         <div class="info-section developer-section">
           <h3>About the Developer</h3>
           <div class="developer-card">
-            <div class="developer-photo">
-              <img src="/developer.jpg" alt="Developer Photo" class="dev-img">
-            </div>
             <div class="developer-info">
               <p><strong>Name:</strong> T S Sathvik Hegade</p>
-              <p><strong>Role:</strong> Engineering Student, Aspiring Developer</p>
-              <p><strong>Institution:</strong> BMS Institute of Technology and Management</p>
+              <p><strong>Role:</strong> Engineering Student & Full Stack Developer</p>
             </div>
-            <div class="skills-section">
-              <h4>Technical Skills</h4>
-              <div class="skill-tags">
-                <span class="skill-tag">Machine Learning</span>
-                <span class="skill-tag">Deep Learning</span>
-                <span class="skill-tag">C++ Programming</span>
-                <span class="skill-tag">Python Programming</span>
-              </div>
-            </div>
-            <div class="goals-section">
-              <h4>Future Goals</h4>
-              <p>Dedicated to advancing expertise in Machine Learning, Deep Learning, and comprehensive software development.</p>
-            </div>
-            <div class="contact-section">
-              <h4>Contact</h4>
-              <a href="mailto:sathvikhegade3@gmail.com" class="contact-link">
-                sathvikhegade3@gmail.com
+
+            <div style="margin-top: 1.5rem; text-align: center;">
+              <a href="/about.html" class="btn btn-primary" style="width: 100%; text-decoration: none;">
+                View Full Professional Profile 🚀
               </a>
-            </div>
-            <div class="report-section">
-              <p class="report-notice">For bug reports, feedback, or inquiries, please contact via email.</p>
             </div>
           </div>
         </div>
@@ -445,30 +399,44 @@
     </div>
   </div>
 
+  <footer class="app-footer"
+    style="padding: 2rem 0; background: var(--surface); margin-top: 4rem; border-top: 1px solid var(--border);">
+    <div class="footer-content" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+      <div class="footer-links" style="display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;">
+        <a href="#" style="color: var(--text-light); text-decoration: none; font-size: 0.9rem;">Terms of Service</a>
+        <a href="#" style="color: var(--text-light); text-decoration: none; font-size: 0.9rem;">Privacy Policy</a>
+        <a href="#" style="color: var(--text-light); text-decoration: none; font-size: 0.9rem;">User Agreement</a>
+        <a href="#" style="color: var(--text-light); text-decoration: none; font-size: 0.9rem;">Accessibility</a>
+      </div>
+      <p style="color: var(--text); font-weight: 500; font-size: 0.95rem; margin: 0;">built by Sathvik Hegade</p>
+      <p style="color: var(--text-light); font-size: 0.85rem; margin: 0;">SecureNote © 2026. All rights reserved.</p>
+    </div>
+  </footer>
+
   <script src="/interactive.js"></script>
   <script src="/gamification.js"></script>
   <script src="/index.js?v=5"></script>
   <script>
     // Initialize interactive components
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       // Initialize tooltips
       new Tooltip();
-      
+
       // Initialize toast notifications
       window.toast = new Toast();
-      
+
       // Initialize scroll animations
       new ScrollAnimationObserver();
-      
+
       // Initialize smooth scroll
       new SmoothScroll();
-      
+
       // Initialize FAQ accordion
       const faqAccordion = document.getElementById('faqAccordion');
       if (faqAccordion) {
         new Accordion(faqAccordion);
       }
-      
+
       // Show welcome message
       setTimeout(() => {
         if (window.toast) {

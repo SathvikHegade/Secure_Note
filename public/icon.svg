@@ -1,13 +1,45 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d3e50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4a5f7f;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="iconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#10b981;stop-opacity:1" />
     </linearGradient>
   </defs>
-  <rect width="100" height="100" rx="20" fill="url(#grad)"/>
-  <path d="M 30 25 L 70 25 C 72 25 73 26 73 28 L 73 72 C 73 74 72 75 70 75 L 30 75 C 28 75 27 74 27 72 L 27 28 C 27 26 28 25 30 25 Z" 
-        fill="white" opacity="0.9"/>
-  <circle cx="50" cy="50" r="12" fill="#667eea"/>
-  <path d="M 47 50 L 49 52 L 53 48" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="100" fill="url(#bgGrad)"/>
+  
+  <!-- Shield outline -->
+  <path d="M 256 100 L 360 140 C 365 142 368 147 368 152 L 368 280 C 368 320 340 355 300 385 L 256 412 L 212 385 C 172 355 144 320 144 280 L 144 152 C 144 147 147 142 152 140 L 256 100 Z" 
+        fill="none" stroke="url(#iconGrad)" stroke-width="20" stroke-linejoin="round"/>
+  
+  <!-- Ruled notebook sheet inside shield -->
+  <rect x="200" y="180" width="112" height="140" rx="8" fill="#ffffff" opacity="0.95"/>
+  
+  <!-- Red margin line (like a notebook) -->
+  <line x1="218" y1="185" x2="218" y2="315" stroke="#ef4444" stroke-width="2"/>
+  
+  <!-- Ruled lines -->
+  <line x1="220" y1="200" x2="305" y2="200" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <line x1="220" y1="220" x2="305" y2="220" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <line x1="220" y1="240" x2="305" y2="240" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <line x1="220" y1="260" x2="305" y2="260" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <line x1="220" y1="280" x2="305" y2="280" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <line x1="220" y1="300" x2="305" y2="300" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  
+  <!-- Padlock -->
+  <g transform="translate(256, 220)">
+    <!-- Lock body -->
+    <rect x="-25" y="15" width="50" height="45" rx="6" fill="#2d3e50"/>
+    <circle cx="0" cy="35" r="8" fill="url(#iconGrad)"/>
+    <rect x="-3" y="35" width="6" height="15" rx="2" fill="url(#iconGrad)"/>
+    
+    <!-- Lock shackle -->
+    <path d="M -15 15 L -15 0 C -15 -12 -8 -20 0 -20 C 8 -20 15 -12 15 0 L 15 15" 
+          fill="none" stroke="#2d3e50" stroke-width="8" stroke-linecap="round"/>
+  </g>
 </svg>

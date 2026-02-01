@@ -19,8 +19,13 @@
   <!-- Header -->
   <header class="app-header">
     <div class="header-content">
-      <h1>SecureNote</h1>
+      <div class="brand-logo" style="display: flex; align-items: center; gap: 0.75rem;">
+        <img src="/icon.svg" alt="SecureNote Logo" width="32" height="32">
+        <h1>SecureNote</h1>
+      </div>
       <div class="header-actions">
+        <a href="/about.html" class="btn btn-secondary btn-sm"
+          style="margin-right: 0.5rem; text-decoration: none;">About</a>
         <span class="pad-id">Note: <strong id="padName"></strong></span>
         <button class="icon-btn" id="themeToggle" title="Toggle Dark Mode" aria-label="Toggle theme">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -187,56 +192,32 @@
         <div class="info-section developer-section">
           <h3>About the Developer</h3>
           <div class="developer-card">
-
-            <!-- Developer Image Added Here -->
-            <div class="developer-photo">
-              <img src="/developer.jpg" alt="Developer Photo" class="dev-img">
-            </div>
-            <!-- End Image Section -->
-
             <div class="developer-info">
               <p><strong>Name:</strong> T S Sathvik Hegade</p>
-              <p><strong>Role:</strong> Engineering Student, Aspiring Developer</p>
-              <p><strong>Institution:</strong> BMS Institute of Technology and Management</p>
+              <p><strong>Role:</strong> Engineering Student & Full Stack Developer</p>
             </div>
 
-            <div class="skills-section">
-              <h4>Technical Skills</h4>
-              <div class="skill-tags">
-                <span class="skill-tag">Machine Learning</span>
-                <span class="skill-tag">Deep Learning</span>
-                <span class="skill-tag">C++ Programming</span>
-                <span class="skill-tag">Python Programming</span>
-              </div>
-            </div>
-
-            <div class="goals-section">
-              <h4>Future Goals</h4>
-              <p>Dedicated to advancing expertise in Machine Learning, Deep Learning, and comprehensive software
-                development.</p>
-            </div>
-
-            <div class="contact-section">
-              <h4>Contact</h4>
-              <a href="mailto:sathvikhegade3@gmail.com" class="contact-link">
-                sathvikhegade3@gmail.com
+            <div style="margin-top: 1.5rem; text-align: center;">
+              <a href="/about.html" class="btn btn-primary" style="width: 100%; text-decoration: none;">
+                View Full Professional Profile 🚀
               </a>
-            </div>
-
-            <div class="report-section">
-              <p class="report-notice">For bug reports, feedback, or inquiries, please contact via email.</p>
             </div>
           </div>
         </div>
-
-        <div class="info-footer">
-          <p>100% Free & Open Source</p>
-          <p>Developed by T S Sathvik Hegade</p>
+        <div class="report-section">
+          <p class="report-notice">For bug reports, feedback, or inquiries, please contact via email.</p>
         </div>
-
-
       </div>
     </div>
+
+    <div class="info-footer">
+      <p>100% Free & Open Source</p>
+      <p>Developed by T S Sathvik Hegade</p>
+    </div>
+
+
+  </div>
+  </div>
   </div>
 
   <script src="/interactive.js"></script>
