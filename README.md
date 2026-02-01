@@ -8,6 +8,12 @@ A secure note-taking platform with AI summaries, Cloudinary uploads, and auto-ex
 
 ## Table of Contents
 [Features at a Glance](#features-at-a-glance) · [Quick Start](#quick-start) · [Tech Stack](#tech-stack) · [Architecture](#architecture) · [Screenshots](#screenshots) · [Documentation](#documentation) · [Deployment](#deployment) · [Key Endpoints](#key-endpoints) · [Testing & Monitoring](#testing--monitoring) · [Usage Tips](#usage-tips) · [Maintainer](#maintainer) · [About Me](#about-me) · [Roadmap](#roadmap)
+
+## Recent Update (2026-02-01)
+
+- **updated responsiveness:** improved layout and interactions across devices; added animations and responsive tweaks to the editor and homepage.
+- **New public assets:** `public/animations.css`, `public/enhanced-styles.css`, `public/gamification.js`, `public/interactive.js` — provide visual polish, responsive helpers, and lightweight gamification/interaction features.
+
 ## Features at a Glance
 
 - Custom URLs with public or bcrypt-protected private notes.
