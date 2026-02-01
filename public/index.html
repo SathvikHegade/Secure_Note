@@ -9,6 +9,8 @@
   <meta name="author" content="SecureNote">
   <title>SecureNote - Custom Secure Notepads</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/animations.css">
+  <link rel="stylesheet" href="/enhanced-styles.css">
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
 </head>
@@ -284,35 +286,85 @@
 
     <!-- Features Section -->
     <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">Security</div>
+      <div class="feature-card animate-fadeInUp" data-animate>
+        <div class="feature-icon">🔒</div>
         <h4>Secure & Private</h4>
         <p>bcrypt password hashing ensures your notes stay protected</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">URLs</div>
+      <div class="feature-card animate-fadeInUp delay-100" data-animate>
+        <div class="feature-icon">🔗</div>
         <h4>Custom URLs</h4>
         <p>Create memorable, personalized URLs for your notepads</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">Auto-Save</div>
+      <div class="feature-card animate-fadeInUp delay-200" data-animate>
+        <div class="feature-icon">💾</div>
         <h4>Auto-Save</h4>
         <p>Your changes are automatically saved every few seconds</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">AI</div>
+      <div class="feature-card animate-fadeInUp delay-300" data-animate>
+        <div class="feature-icon">🤖</div>
         <h4>AI Summaries</h4>
         <p>Google Gemini AI generates concise summaries of your notes</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">Files</div>
+      <div class="feature-card animate-fadeInUp delay-400" data-animate>
+        <div class="feature-icon">📁</div>
         <h4>File Uploads</h4>
         <p>Attach PDFs, images, and documents to your notes</p>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">Theme</div>
+      <div class="feature-card animate-fadeInUp delay-500" data-animate>
+        <div class="feature-icon">🌙</div>
         <h4>Dark Mode</h4>
         <p>Easy on the eyes with automatic dark mode support</p>
+      </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div style="margin-top: 4rem; padding-top: 3rem; border-top: 2px solid var(--border);">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <h2 style="font-size: 2rem; color: var(--primary); margin-bottom: 0.5rem;">Frequently Asked Questions</h2>
+        <p style="color: var(--text-light);">Find answers to common questions about SecureNote</p>
+      </div>
+      <div class="accordion" id="faqAccordion">
+        <div class="accordion-item">
+          <div class="accordion-header">How secure are my notes?</div>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              Your notes are protected with bcrypt password hashing (10 rounds). Private notes require a password to access, and all data is securely stored in PostgreSQL. Only you have access to your notes with the correct URL and password combination.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-header">What's the difference between public and private notes?</div>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              Private notes require a password and never expire. Public notes don't require a password but auto-delete after your chosen time period (1 hour to 7 days). Choose public for temporary sharing and private for long-term storage.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-header">How does auto-save work?</div>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              Your changes are automatically saved 2 seconds after you stop typing. You'll see a "Saved" indicator when your content is safely stored. No need to manually save!
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-header">What file types can I upload?</div>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              You can upload PDF, JPG, PNG, and DOCX files up to 10MB each. Files are stored securely on Cloudinary CDN for fast access. File expiration follows your note's retention settings.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item">
+          <div class="accordion-header">How does AI summarization work?</div>
+          <div class="accordion-content">
+            <div class="accordion-content-inner">
+              Click the "Summarize" button to generate an AI-powered summary using Google Gemini 2.5 Flash. It analyzes your note content and provides key insights, statistics, and a concise overview.
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -393,7 +445,38 @@
     </div>
   </div>
 
+  <script src="/interactive.js"></script>
+  <script src="/gamification.js"></script>
   <script src="/index.js?v=5"></script>
+  <script>
+    // Initialize interactive components
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize tooltips
+      new Tooltip();
+      
+      // Initialize toast notifications
+      window.toast = new Toast();
+      
+      // Initialize scroll animations
+      new ScrollAnimationObserver();
+      
+      // Initialize smooth scroll
+      new SmoothScroll();
+      
+      // Initialize FAQ accordion
+      const faqAccordion = document.getElementById('faqAccordion');
+      if (faqAccordion) {
+        new Accordion(faqAccordion);
+      }
+      
+      // Show welcome message
+      setTimeout(() => {
+        if (window.toast) {
+          window.toast.info('Welcome to SecureNote! Create your first note to get started 🚀', 4000);
+        }
+      }, 1000);
+    });
+  </script>
 </body>
 
 </html>

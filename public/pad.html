@@ -9,6 +9,8 @@
   <meta name="author" content="SecureNote">
   <title>SecureNote</title>
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/animations.css">
+  <link rel="stylesheet" href="/enhanced-styles.css">
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" href="/icon.svg" type="image/svg+xml">
 </head>
@@ -45,8 +47,8 @@
       <form id="authForm" class="auth-form">
         <div class="form-group">
           <label for="passwordInput">Password</label>
-          <input type="password" id="passwordInput" required minlength="4"
-            placeholder="Enter your password" autocomplete="current-password">
+          <input type="password" id="passwordInput" required minlength="4" placeholder="Enter your password"
+            autocomplete="current-password">
         </div>
 
         <button type="submit" class="btn btn-primary" id="authSubmit">
@@ -112,6 +114,9 @@
       </div>
 
       <div id="filesList" class="files-list"></div>
+
+      <!-- Stats Dashboard -->
+      <div id="statsWidget" style="margin-top: 2rem;"></div>
     </section>
   </main>
 
@@ -234,7 +239,19 @@
     </div>
   </div>
 
+  <script src="/interactive.js"></script>
+  <script src="/gamification.js"></script>
   <script src="/script.js?v=6"></script>
+  <script>
+    // Initialize interactive components on pad page
+    document.addEventListener('DOMContentLoaded', function () {
+      // Initialize toast notifications
+      window.toast = new Toast();
+
+      // Initialize tooltips
+      new Tooltip();
+    });
+  </script>
 </body>
 
 </html>

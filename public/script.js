@@ -51,7 +51,7 @@ const els = {
 async function init() {
   padId = window.location.pathname.split('/').pop() || 'default';
   els.padName.textContent = padId;
-  
+
   // Check for stored credentials from homepage
   const storedAuth = sessionStorage.getItem('padAuth');
   if (storedAuth) {
@@ -63,13 +63,14 @@ async function init() {
         await loadPad();
         showMainScreen();
         setupEventListeners();
+        initializeGamification();
         return;
       }
     } catch (e) {
       console.error('Failed to parse stored auth:', e);
     }
   }
-  
+
   // Try to load as public note first
   try {
     console.log('[PUBLIC CHECK] Attempting to load as public note...');
@@ -78,13 +79,13 @@ async function init() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: '' })
     });
-    
+
     console.log('[PUBLIC CHECK] Response status:', res.status);
-    
+
     if (res.ok) {
       const data = await res.json();
       console.log('[PUBLIC CHECK] Response data:', data);
-      
+
       if (data.isPublic) {
         // Public note - load directly
         console.log('[PUBLIC CHECK] Note is public, loading without password');
@@ -96,6 +97,7 @@ async function init() {
         updateRetentionUI();
         showMainScreen();
         setupEventListeners();
+        initializeGamification();
         return;
       }
     }
@@ -103,12 +105,12 @@ async function init() {
     // Not public, continue to password screen
     console.log('[PUBLIC CHECK] Error or not public:', e);
   }
-  
+
   // Show password screen for private notes
   console.log('[PUBLIC CHECK] Showing password screen for private note');
   setupAuthScreen();
   setupEventListeners();
-  
+
   console.log('✓ SecureNote initialized');
 }
 
@@ -124,20 +126,20 @@ function setupAuthScreen() {
 function setupEventListeners() {
   // Auth
   els.authForm.addEventListener('submit', handleAuth);
-  
+
   // Editor
   els.editor.addEventListener('input', handleEditorChange);
-  
+
   // Files
   els.uploadZone.addEventListener('click', () => els.fileInput.click());
   els.fileInput.addEventListener('change', handleFileSelect);
   els.uploadZone.addEventListener('dragover', handleDragOver);
   els.uploadZone.addEventListener('dragleave', handleDragLeave);
   els.uploadZone.addEventListener('drop', handleDrop);
-  
+
   // Summarize
   els.summarizeBtn.addEventListener('click', handleSummarize);
-  
+
   // Modals
   els.closeSummary.addEventListener('click', () => closeModal(els.summaryModal));
   els.closePreview.addEventListener('click', () => closeModal(els.previewModal));
@@ -147,14 +149,14 @@ function setupEventListeners() {
   if (els.retentionSelect) {
     els.retentionSelect.addEventListener('change', handleRetentionChange);
   }
-  
+
   // Click outside modal
   [els.summaryModal, els.previewModal, els.infoModal].forEach(modal => {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) closeModal(modal);
     });
   });
-  
+
   // Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -171,18 +173,18 @@ function setupEventListeners() {
 
 async function handleAuth(e) {
   e.preventDefault();
-  
+
   const password = els.passwordInput.value.trim();
-  
+
   // Validation
   if (!password || password.length < 4) {
     showError('Password must be at least 4 characters');
     return;
   }
-  
+
   els.authSubmit.disabled = true;
   els.authSubmit.textContent = 'Verifying...';
-  
+
   try {
     // Try to load pad with password
     currentPassword = password;
@@ -191,7 +193,7 @@ async function handleAuth(e) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password })
     });
-    
+
     if (res.ok) {
       const data = await res.json();
       els.editor.value = data.content || '';
@@ -236,7 +238,7 @@ async function loadPad() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ password: currentPassword })
     });
-    
+
     const data = await res.json();
     els.editor.value = data.content || '';
     renderFiles(data.files || []);
@@ -252,7 +254,18 @@ function handleEditorChange() {
   clearTimeout(saveTimeout);
   els.saveStatus.textContent = 'Typing...';
   els.saveStatus.style.background = '#feebc8';
-  
+
+  // Track word and character count for gamification
+  if (window.gamification) {
+    const content = els.editor.value;
+    const wordCount = content.trim().split(/\s+/).filter(w => w).length;
+    const charCount = content.length;
+
+    window.gamification.trackWordCount(wordCount);
+    window.gamification.trackCharacterCount(charCount);
+    updateStatsWidget();
+  }
+
   saveTimeout = setTimeout(savePad, 2000);
 }
 
@@ -266,7 +279,7 @@ async function savePad() {
         content: els.editor.value
       })
     });
-    
+
     if (res.ok) {
       els.saveStatus.textContent = 'Saved ✓';
       els.saveStatus.style.background = '#c6f6d5';
@@ -302,49 +315,74 @@ function handleDragLeave() {
 function handleDrop(e) {
   e.preventDefault();
   els.uploadZone.classList.remove('drag-over');
-  
+
   const file = e.dataTransfer.files[0];
   if (file) uploadFile(file);
 }
 
 async function uploadFile(file) {
   if (file.size > 10 * 1024 * 1024) {
-    alert('File too large. Maximum size is 10MB.');
+    if (window.toast) {
+      window.toast.error('File too large. Maximum size is 10MB.');
+    } else {
+      alert('File too large. Maximum size is 10MB.');
+    }
     return;
   }
-  
+
   const formData = new FormData();
   formData.append('file', file);
   formData.append('password', currentPassword);
-  
+
   try {
     const res = await fetch(`/api/upload/${padId}`, {
       method: 'POST',
       body: formData
     });
-    
+
     const data = await res.json();
     if (data.success) {
+      if (window.toast) {
+        window.toast.success(`File "${file.name}" uploaded successfully!`);
+      }
+
+      // Reload pad to update file list (renderFiles will sync count)
       await loadPad();
     } else {
       const errorMsg = data.details ? `${data.error}: ${data.details}` : (data.error || 'Upload failed');
       console.error('Upload error:', errorMsg);
-      alert(errorMsg);
+      if (window.toast) {
+        window.toast.error(errorMsg);
+      } else {
+        alert(errorMsg);
+      }
     }
   } catch (error) {
     console.error('Upload error:', error);
-    alert('Upload failed: ' + error.message);
+    if (window.toast) {
+      window.toast.error('Upload failed: ' + error.message);
+    } else {
+      alert('Upload failed: ' + error.message);
+    }
   }
 }
 
 function renderFiles(files) {
   els.fileCount.textContent = `${files.length} file${files.length !== 1 ? 's' : ''}`;
-  
+
+  // Sync file count with actual files present
+  if (window.gamification) {
+    // Set the file count to match exactly what we have
+    window.gamification.data.stats.totalFiles = files.length;
+    window.gamification.saveData();
+    updateStatsWidget();
+  }
+
   if (files.length === 0) {
     els.filesList.innerHTML = '<p style="text-align:center;color:#a0aec0;padding:2rem">No files uploaded yet</p>';
     return;
   }
-  
+
   els.filesList.innerHTML = files.map(file => `
     <div class="file-item">
       <div class="file-info-text">
@@ -369,7 +407,7 @@ function canPreview(filename) {
 }
 
 function isMobile() {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     || window.innerWidth < 768;
 }
 
@@ -414,7 +452,7 @@ async function previewFile(filename, originalName) {
 
     // Revoke object URL when modal is closed
     const cleanup = () => {
-      try { URL.revokeObjectURL(blobUrl); } catch (e) {}
+      try { URL.revokeObjectURL(blobUrl); } catch (e) { }
       els.closePreview.removeEventListener('click', cleanup);
     };
     els.closePreview.addEventListener('click', cleanup);
@@ -455,7 +493,7 @@ async function downloadFile(filename, originalName) {
     document.body.appendChild(a);
     a.click();
     a.remove();
-    setTimeout(() => { try { URL.revokeObjectURL(blobUrl); } catch (e) {} }, 1000);
+    setTimeout(() => { try { URL.revokeObjectURL(blobUrl); } catch (e) { } }, 1000);
   } catch (error) {
     console.error('Download error:', error);
     alert('Download failed: ' + (error.message || 'Unknown error'));
@@ -466,17 +504,17 @@ async function deleteFile(fileId, fileName) {
   if (!confirm(`Delete "${fileName}"?`)) {
     return;
   }
-  
+
   try {
     const res = await fetch(`/api/file/${fileId}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         padId: padId,
-        password: currentPassword 
+        password: currentPassword
       })
     });
-    
+
     const data = await res.json();
     if (data.success) {
       await loadPad(); // Reload to update file list
@@ -495,28 +533,28 @@ async function deleteFile(fileId, fileName) {
 
 async function handleSummarize() {
   const text = els.editor.value.trim();
-  
+
   if (!text || text.length < 50) {
     alert('Please write at least 50 characters to summarize');
     return;
   }
-  
+
   showModal(els.summaryModal);
   els.summaryContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generating AI summary with Google Gemini...</p></div>';
-  
+
   try {
     const res = await fetch('/api/summarize', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         padId: padId,
-        password: currentPassword, 
-        content: text 
+        password: currentPassword,
+        content: text
       })
     });
-    
+
     const data = await res.json();
-    
+
     if (res.ok && data.success) {
       displaySummary(data.summary, text);
     } else {
@@ -524,9 +562,9 @@ async function handleSummarize() {
         <div style="text-align:center;padding:2rem;">
           <p style="color:var(--danger);margin-bottom:1rem;">❌ ${escapeHtml(data.error || 'Summarization failed')}</p>
           <p style="color:var(--text-light);font-size:0.875rem;">
-            ${data.error && data.error.includes('API key') ? 
-              'The administrator needs to configure the Gemini API key in the .env file.' : 
-              'Please try again later or check your connection.'}
+            ${data.error && data.error.includes('API key') ?
+          'The administrator needs to configure the Gemini API key in the .env file.' :
+          'Please try again later or check your connection.'}
           </p>
         </div>
       `;
@@ -545,7 +583,7 @@ async function handleSummarize() {
 function displaySummary(summary, originalText) {
   const wordCount = originalText.split(/\s+/).length;
   const lineCount = originalText.split('\n').length;
-  
+
   els.summaryContent.innerHTML = `
     <div class="summary-section">
       <h3>🤖 AI Summary</h3>
@@ -708,25 +746,60 @@ async function handleRetentionChange() {
     setTimeout(() => updateRetentionUI(), 3000);
   }
 }
+
+// ============================================
+// GAMIFICATION INTEGRATION
+// ============================================
+
+function initializeGamification() {
+  if (!window.gamification) return;
+
+  // Count existing content on page load
+  const content = els.editor.value || '';
+  if (content.trim()) {
+    const wordCount = content.trim().split(/\s+/).filter(w => w).length;
+    const charCount = content.length;
+
+    window.gamification.trackWordCount(wordCount);
+    window.gamification.trackCharacterCount(charCount);
+  }
+
+  // Initial stats update
+  updateStatsWidget();
+
+  // Show motivational prompt periodically
+  setInterval(() => {
+    if (window.gamification.shouldShowMotivation()) {
+      window.gamification.showMotivation();
+    }
+  }, 5 * 60 * 1000); // Every 5 minutes
+}
+
+function updateStatsWidget() {
+  const statsContainer = document.getElementById('statsWidget');
+  if (!statsContainer || !window.gamification) return;
+
+  window.gamification.renderStatsWidget(statsContainer);
+}
 // ============================================
 // DARK MODE
 // ============================================
 
 function setupDarkMode() {
   const themeToggle = document.getElementById('themeToggle');
-  
+
   // Check saved preference
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme === 'dark') {
     document.body.classList.add('dark-mode');
     themeToggle.textContent = '☀️';
   }
-  
+
   // Toggle theme
   themeToggle.addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
     const isDark = document.body.classList.contains('dark-mode');
-    themeToggle.innerHTML = isDark 
+    themeToggle.innerHTML = isDark
       ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
       : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
